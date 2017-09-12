@@ -1,5 +1,5 @@
 #! /bin/bash
-
+#comment
 echo "Hello and welcome to the party!!!"
 
 name=()    # planet name
