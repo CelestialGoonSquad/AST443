@@ -1,6 +1,7 @@
 #! /bin/bash
 #comment
-echo "Hello and welcome to the party!!!"
+# 
+echo "Hello and welcome to the party!!! (READ IN SEXY VOICE)"
 
 name=()    # planet name
 rplanet=() # planet radius
