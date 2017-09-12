@@ -1,6 +1,5 @@
 #! /bin/bash
 #comment
-#hey pat
 echo "Hello and welcome to the party!!!"
 
 name=()    # planet name
@@ -27,7 +26,7 @@ rplanet=( $(awk '{print $1}' temp.dat) )      # Assigns data to relevant array
 
 
 numele=${#rplanet[@]}
-echo $numele
+
 for ((i=1;$i<$numele;i++))  # converts into km
 do
     if [ "${rplanet[$i]}" = "NaN" ]; then # Checks for value to compute and creates array of unusable stars
@@ -41,15 +40,23 @@ echo "Planetary Radius Array Built"
 #echo "${rplanet[*]}"
 
 #-------------------------------------------------------------
+### Evaluates Initial Transit Time
+awk -F '\t' '{print $37}' $datfile >> temp.dat
+sed -i -e 's/^$/NoDate/' temp.dat
+sed -i -e 's/ /-/g' temp.dat
+tzero=( $(awk '{print $1}' temp.dat) )
+\rm temp.dat
+
+
+echo "Initial Transit Array Built"
+
+#-------------------------------------------------------------
 ### Evaluates planet name
 awk -F '\t' '{print $1}' $datfile >> temp.dat
 sed -i -e 's/^$/NoName/' temp.dat
 sed -i -e 's/ /-/g' temp.dat
 name=( $(awk '{print $0}' temp.dat) )
 \rm temp.dat
-
-numele=${#name[@]}
-echo $numele
 
 echo "Name Array Built"
 
@@ -68,7 +75,6 @@ awk -F '\t' '{print $71}' $datfile >> temp.dat
 sed -i -e 's/^$/-1.00/' temp.dat
 dec=( $(awk '{print $1}' temp.dat) )
 \rm temp.dat
-
 
 for ((i=1;$i<$numele;i++))
 do
@@ -108,9 +114,6 @@ sed -i -e 's/^$/NaN/' temp.dat
 period=( $(awk '{print $1}' temp.dat) )
 \rm temp.dat
 
-echo ${period[0]}
-echo ${period[1]}
-
 for ((i=1;i<$numele;i++))  # checks for period value and converts to hours
 do
     if [ "${period[$i]}" = "NaN" ]; then
@@ -131,7 +134,6 @@ incl=( $(awk '{print $1}' temp.dat) )
 \rm temp.dat
 
 #echo "${incl[*]}"
-
 scale=6
 
 convert=$(echo "3.14159265/180"|bc -l) 
@@ -254,26 +256,32 @@ echo "Transit Duration Array Built"
 #echo "${transit[*]}"
 
 #-------------------------------------------------------------
-### Printing Out Potential Planets
+### Printing Out Potential Planets & Transit Time Calculations
 #-------------------------------------------------------------
 date=`date '+%Y-%m-%d-%H:%M'`
 candidatesfile=candidates-$date.out
 
+JD=2458002.5
+
 for ((i=1;i<$numele;i++))
 do
-    if [ ${ignoretran[$i]} == 0 ] && [ ${ignoredim[$i]} == 0 ]; then
+    if [ ${ignoretran[$i]} == 0 ] && [ ${ignoredim[$i]} == 0 ] && [ "${tzero[$i]}" != "NaN" ] && [ "${period[$i]}" != "NaN" ]; then
 	echo "$i --- Name: ${name[$i]}, Transit Duration: ${transit[$i]}, Dimming Magnitude: ${dimming[$i]}," >> $candidatesfile
 	echo "        Right Ascension: ${ra[$i]}, Declination: ${dec[$i]}, Period: ${period[$i]}" >> $candidatesfile
+
+	elapsed=$(echo "(${tzero[$i]})-($JD)" |bc -l)
+#	orbitsint=$(echo "(${elapsed[$i]})/(${period[$i]})" |bc)
+#	lastorb=$(echo "(${period[$i]})*(${orbitsint[$i]})" |bc -l)
+ #     	monthorbs=$(echo "(720)/(${period[$i]})" |bc)
+
+	for ((k=1;k<$monthorbs;k++))
+	do
+#	    transtime=`echo "(${lastorb[$i]})+($k)*(${period[$i]})" |bc -l`
+#	    transtime=`echo "($transtime)+(0.01666666666666667)" |bc -l`
+	    echo "      $k --- $transtime" >> $candidatesfile
+	done
 	echo "------------------------------------------------------------------------------" >> $candidatesfile
     fi
 done
 echo "Candidates written to $candidatesfile"
 
-#-------------------------------------------------------------
-### Transit Time Calculations
-#-------------------------------------------------------------
-
-
-
-
-exit
