@@ -79,8 +79,8 @@ def mastbi(path,temp): #path,temperature word in file name
             imagedata1 = hdulist1[0].data
             all_bias.append(imagedata1)
     master_bias = np.mean(all_bias,axis=0)
-    #newhdu = fits.PrimaryHDU(master_bias)
-    #newhdu.writeto('master_bias.fits')
+    newhdu = fits.PrimaryHDU(master_bias)
+    newhdu.writeto('master_bias.fits',clobber=True)
     countvalues1 = master_bias.flatten()
     mean_all = np.mean(countvalues1)
     sig_all = np.std(countvalues1)
