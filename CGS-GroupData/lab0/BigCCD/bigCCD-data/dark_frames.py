@@ -70,7 +70,17 @@ def gaussfit(path,exptime):
     print("clipped sigma = " + str(np.std(clippedvalues)))
 
     #Identify hot/warm pixels as those greater than 5 sigma
-    
+
+def DarkCurrent(path,temp):
+    master = master_bias.fits
+    for f in os.listdir(path):
+        if "dark" in f and temp in f:
+            print f
+            dark_hdulist = fits.open(path + '/' + f)
+            dark_imagedata = hdulist[0].data
+            mast_hdulist = fits.open(path + '/' + master)
+            mast_imagedata = fits.open(path + '/' + master)
+            dark_current = dark_imagedata - mast_imagedata
 
 plotdark(lorenapath, "300s")
 gaussfit(lorenapath, "300s")
