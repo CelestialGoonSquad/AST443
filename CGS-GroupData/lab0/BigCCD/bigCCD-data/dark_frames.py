@@ -7,16 +7,16 @@ from scipy.stats import norm
 import os
 
 jasminepath = "/Users/Jasmine/Documents/stony_brook/y4_sb/ast443/CGS-Groupdata/lab0/BigCCD/bigCCD-data/"
-lorenapath = "/home/icecube/AST/CGS-GroupData/lab0/BigCCD/bigCCD-data/"
+lorenapath = "/home/icecube/AST/CGS-GroupData/AST443/CGS-GroupData/lab0/BigCCD/bigCCD-data/"
 
 #Plot and fit bias
 def plotdark(path,exptime):
     if exptime == '300s':
         filename = 'darks-expos300s-Neg10-Vis.00000000.DARK.FIT'
-    print lorenapath + '/' + filename
+    #print lorenapath + '/' + filename
     hdulist = fits.open(lorenapath + '/' + filename)
     header = hdulist[0].header
-    print(header)
+    #print(header)
     imagedata = hdulist[0].data
     countvalues = imagedata.flatten()
     print("max counts = " + str(np.max(countvalues)))
@@ -34,7 +34,7 @@ def plotdark(path,exptime):
 def gaussfit(path,exptime):
     if exptime == '300s':
         filename = 'darks-expos300s-Neg10-Vis.00000000.DARK.FIT'
-    print lorenapath + '/' + filename
+    #print lorenapath + '/' + filename
     hdulist = fits.open(lorenapath + '/' + filename)
     imagedata = hdulist[0].data
     countvalues = imagedata.flatten()
@@ -53,7 +53,7 @@ def gaussfit(path,exptime):
     plt.plot(xarray,yarray,color="red")
     plt.yscale('log')
     plt.ylim([0.1,1e6])
-    plt.show()
+    #plt.show()
 
     #set cut limimts for outliers
     cut_upper = mean_single+5*sig_single
@@ -71,16 +71,27 @@ def gaussfit(path,exptime):
 
     #Identify hot/warm pixels as those greater than 5 sigma
 
-def DarkCurrent(path,temp):
-    master = master_bias.fits
+def DarkCurrent(path,temp,master):
+    t = []
+    counts = []
     for f in os.listdir(path):
-        if "dark" in f and temp in f:
-            print f
+        if "DARK" in f and temp in f:
             dark_hdulist = fits.open(path + '/' + f)
-            dark_imagedata = hdulist[0].data
+            dark_imagedata = dark_hdulist[0].data
             mast_hdulist = fits.open(path + '/' + master)
-            mast_imagedata = fits.open(path + '/' + master)
-            dark_current = dark_imagedata - mast_imagedata
-
-plotdark(lorenapath, "300s")
-gaussfit(lorenapath, "300s")
+            mast_imagedata = mast_hdulist[0].data
+            dark_current = dark_imagedata.flatten() - mast_imagedata.flatten()
+            mode = stats.mode(dark_current)[0][0]
+            median = np.median(dark_current)
+            counts.append(mode)
+            print("mode for " + str(f) + " = " + str(mode))
+            print(median)
+            if f[13] == "s":
+                t.append(f[11:13])
+            elif f[13] == "0":
+                t.append(f[11:14])
+    plt.scatter(t,counts)
+    plt.show()
+#plotdark(lorenapath, "300s")
+#gaussfit(lorenapath, "300s")
+DarkCurrent(lorenapath, "Neg10","master_bias.fits")
