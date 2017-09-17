@@ -68,7 +68,7 @@ def badpixmapping(path):
 
     for i in range(0,len(master_flat[0])):
         for k in range(0,len(master_flat[1])):
-            if master_flat[i][k] <= meandark - 5.*sigdark or badpix[i][k] == 0:
+            if master_flat[i][k] >= meandark + 5.*sigdark or badpix[i][k] == 0:
                 badpix[i][k]=0
             else:
                 badpix[i][k]=1
