@@ -55,15 +55,15 @@ def badpixmapping(path):
     
     filename = 'darks-expos300s-Neg10-Vis.00000000.DARK.FIT'
     hdulist2 = fits.open(path + '/' + filename)
-    imagedata2 = hdulist2[0].daata
+    imagedata2 = hdulist2[0].data
     countvalues = imagedata2.flatten()
     cmin2 = 950
     cmax2 = 1150
     nbins2 = 100
 
-    normalization = ((cmax-cmin)/nbins)*len(countvalues[(countvalues>=cmin) & (countvalues<=cmax)])
+    normalization = ((cmax2-cmin2)/nbins2)*len(countvalues[(countvalues>=cmin2) & (countvalues<=cmax2)])
     meandark = np.mean(countvalues) #mean of single image
-    sigdark = np.std(countvalues[countvalues<=cmax]) #standard deviation of single image
+    sigdark = np.std(countvalues[countvalues<=cmax2]) #standard deviation of single image
     
 
     for i in range(0,len(master_flat[0])):
