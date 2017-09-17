@@ -15,7 +15,7 @@ jasminepath = "/Users/Jasmine/Documents/stony_brook/y4_sb/ast443/CGS-Groupdata/l
 
 def masterflat(path):
     all_flats = []
-    hdulist1 = fits.open(jasminepath + '/' + 'flat-expos23s-Neg5-Vis.00000009.FIT', ignore_missing_end=True)
+    #hdulist1 = fits.open(jasminepath + '/' + 'flat-expos23s-Neg5-Vis.00000009.FIT', ignore_missing_end=True)
     for f in os.listdir(jasminepath):
         if "flat" in f and "FIT" in f:
             print f
@@ -26,9 +26,9 @@ def masterflat(path):
             all_flats.append(norm_data)
     master_flat = np.median(all_flats,axis=0)
     master_flat = master_flat/np.mean(master_flat)
-    std = np.std(master_flat)
-    mean = np.mean(master_flat)
-    print 'standard deviation = ', std
+    countvalues1 = master_flat.flatten()
+    std = np.std(countvalues1)
+    mean = np.mean(countvalues1)
     print mean - 5.*std
 
     for i in range(0,len(master_flat[0])):
@@ -49,5 +49,29 @@ def masterflat(path):
     plt.show()'''
 
 
+#find the gain of the CCD using a flat
+def gain(path):
+    hdulist2 = fits.open(path + '/' + 'flat-expos23s-Neg5-Vis.00000000.FIT') #get info of one header
+    header2 = hdulist2[0].header
+    imagedata2 = hdulist2[0].data
+    countvalues2 = imagedata2.flatten()
+    meanb = np.mean(countvalues2) #calculate mean
+    stdb = np.std(countvalues2) #calculate standard deviation
+    cut_upper = meanb+5.*stdb
+    cut_lower = meanb-5.*stdb
+    clippedvalues = countvalues2[(countvalues2>=cut_lower) & (countvalues2<=cut_upper)]
+    n_photons = np.mean(clippedvalues)
+    sigma = np.sqrt(n_photons)
+    std = np.std(clippedvalues)
+    gain = (sigma/std)**2 #calculate gain
+    print 'mean = ', n_photons
+    print 'sigma = ', sigma
+    print 'std = ', std
+    print 'calculated gain = ', gain
+    head_gain = header2["EGAIN"] #get gain from header
+    print 'gain in header = ', head_gain
 
-masterflat(jasminepath)
+
+
+#masterflat(jasminepath)
+gain(jasminepath)
