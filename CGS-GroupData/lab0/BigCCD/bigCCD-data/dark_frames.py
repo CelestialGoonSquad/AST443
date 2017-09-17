@@ -1,3 +1,8 @@
+#Jasmine Garani, Lorena Mezini, Patrick Payne
+#Code for dealing with dark frames (4.2 of lab 0)
+#"Decide how to identify hot pixels and warm pixels. What fraction of the CCD does each category make up" -- not in this code, done in badpixmap.py 
+
+
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -10,11 +15,13 @@ jasminepath = "/Users/Jasmine/Documents/stony_brook/y4_sb/ast443/CGS-Groupdata/l
 lorenapath = "/home/icecube/AST/CGS-GroupData/AST443/CGS-GroupData/lab0/BigCCD/bigCCD-data/"
 
 #Plot and fit bias
-def plotdark(path,exptime):
-    if exptime == '300s':
+def plotdark(path,exptime,temp):
+    if exptime == '300s' and temp == 'Neg10':
         filename = 'darks-expos300s-Neg10-Vis.00000000.DARK.FIT'
+    if exptime == '300s' and temp == 'Neg5':
+        filename = 'darks-expos300s-Neg5-Vis.00000000.DARK.FIT'
     #print lorenapath + '/' + filename
-    hdulist = fits.open(lorenapath + '/' + filename)
+    hdulist = fits.open(path + '/' + filename)
     header = hdulist[0].header
     #print(header)
     imagedata = hdulist[0].data
@@ -27,15 +34,17 @@ def plotdark(path,exptime):
     print("median = " + str(np.median(countvalues)))
     print("sigma = " + str(np.std(countvalues)))
     
-    #plt.hist(countvalues, bins = 100, range=[1000,1200], histtype = 'step')
-    #plt.show()
+    plt.hist(countvalues, bins = 100, range=[1000,1200], histtype = 'step')
+    plt.show()
     return
 
-def gaussfit(path,exptime):
-    if exptime == '300s':
+def gaussfit(path,exptime,temp):
+    if exptime == '300s' and temp == 'Neg10':
         filename = 'darks-expos300s-Neg10-Vis.00000000.DARK.FIT'
+    if exptime == '300s' and temp == 'Neg5':
+        filename = 'darks-expos300s-Neg5-Vis.00000000.DARK.FIT'
     #print lorenapath + '/' + filename
-    hdulist = fits.open(lorenapath + '/' + filename)
+    hdulist = fits.open(path + '/' + filename)
     imagedata = hdulist[0].data
     countvalues = imagedata.flatten()
     cmin = 950
@@ -77,21 +86,28 @@ def DarkCurrent(path,temp,master):
     for f in os.listdir(path):
         if "DARK" in f and temp in f:
             dark_hdulist = fits.open(path + '/' + f)
+            dark_imageheader = dark_hdulist[0].header
             dark_imagedata = dark_hdulist[0].data
             mast_hdulist = fits.open(path + '/' + master)
             mast_imagedata = mast_hdulist[0].data
             dark_current = dark_imagedata.flatten() - mast_imagedata.flatten()
             mode = stats.mode(dark_current)[0][0]
-            median = np.median(dark_current)
-            counts.append(mode)
+            median = np.median(dark_current) #we have decided to use median not mode because of how gaussain looks
+            counts.append(median)
             print("mode for " + str(f) + " = " + str(mode))
             print(median)
-            if f[13] == "s":
-                t.append(f[11:13])
-            elif f[13] == "0":
-                t.append(f[11:14])
-    plt.scatter(t,counts)
+            t.append(dark_imageheader['EXPTIME'])
+    print t
+    plt.plot(t,counts,marker='o',linestyle='none')
+    coef = np.polyfit(t,counts,1)
+    fit = np.poly1d(coef)
+    print fit #slope the dark current in electrons per pixel per second
+    x = np.linspace(0,300.0,100)
+    plt.plot(x,fit(x))
     plt.show()
-#plotdark(lorenapath, "300s")
-#gaussfit(lorenapath, "300s")
-DarkCurrent(lorenapath, "Neg10","master_bias.fits")
+#plotdark(jasminepath, "300s",'Neg5')
+#plotdark(jasminepath, "300s", 'Neg10')
+#gaussfit(lorenapath, "300s",'Neg5')
+#gaussfit(jasminepath, "300s',"Neg10")
+DarkCurrent(jasminepath, "Neg5","master-bias-Neg5.fits")
+#DarkCurren(jasminepath, "Neg10","master-bias-Neg10.fits")
