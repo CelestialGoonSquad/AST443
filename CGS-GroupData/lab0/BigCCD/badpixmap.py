@@ -18,7 +18,7 @@ from scipy.stats import norm
 jasminepath = "/Users/Jasmine/Documents/stony_brook/y4_sb/ast443/CGS-Groupdata/lab0/BigCCD/bigCCD-data/"
 lorenapath = "/home/icecube/AST/CGS-GroupData/AST443/CGS-GroupData/lab0/BigCCD/bigCCD-data/"
 patrickpath = "/Users/ilovealltigers/SBU_F17/AST_443/LAB1/CGS-GroupData/lab0/BigCCD/bigCCD-data/"
-
+path = jasminepath
 def badpixmapping(path):
     all_flats = []
 #    hdulist1 = fits.open(path + '/' + 'flat-expos23s-Neg5-Vis.00000009.FIT', ignore_missing_end=True)
