@@ -8,7 +8,7 @@ import warnings
 from astropy.utils.exceptions import AstropyWarning
 warnings.simplefilter('ignore',category=AstropyWarning)
 import matplotlib.pyplot as plt
-
+from scipy.stats import norm
 #==========================================================================
 
 jasminepath = "/Users/Jasmine/Documents/stony_brook/y4_sb/ast443/CGS-Groupdata/lab0/BigCCD/bigCCD-data/"
@@ -55,6 +55,36 @@ def gain(path):
     header2 = hdulist2[0].header
     imagedata2 = hdulist2[0].data
     countvalues2 = imagedata2.flatten()
+    nbins = 100
+    #plt.xlim([17000,25000.2])
+    mu = 19738.0
+    stdt = 375.991
+    #x2 = np.arange(17000,25000,0.001)
+    #plt.plot(x2,norm.pdf(x2,mu,stdt),label='Gaussian')
+    
+    lower_bound = 440
+    upper_bound = 580
+    centerbox = np.zeros((140,140))
+    for i in range(lower_bound,upper_bound):
+        for k in range(lower_bound,upper_bound):
+            centerbox[i-lower_bound][k-upper_bound] = imagedata2[i][k]
+    boxhdu = fits.PrimaryHDU(centerbox)
+    boxhdu.writeto('boxflat.fits',clobber=True)
+    boxflatten = centerbox.flatten()
+    plt.hist(boxflatten,bins=nbins)
+    plt.yscale("log")
+
+
+    '''x=np.linspace(17000,25000,1000)
+    mu = 19738.0
+    sig = 375.991
+    y=(1/(sig*np.sqrt(2*np.pi)))*np.exp((-1.0*(x-mu)**2)/(2*sig**2))
+
+    plt.plot(x,y,label='\mu,\sigma=30,\sqrt{30}')
+    plt.legend(loc=0) #Places Legend                                             
+    plt.grid(True)
+    
+    plt.show()
     meanb = np.mean(countvalues2) #calculate mean
     stdb = np.std(countvalues2) #calculate standard deviation
     cut_upper = meanb+5.*stdb
@@ -63,6 +93,10 @@ def gain(path):
     n_photons = np.mean(clippedvalues)
     sigma = np.sqrt(n_photons)
     std = np.std(clippedvalues)
+    '''
+    n_photons = np.mean(boxflatten)
+    sigma = np.sqrt(n_photons)
+    std = np.std(boxflatten)
     gain = (sigma/std)**2 #calculate gain
     print 'mean = ', n_photons
     print 'sigma = ', sigma
@@ -71,7 +105,7 @@ def gain(path):
     head_gain = header2["EGAIN"] #get gain from header
     print 'gain in header = ', head_gain
 
-
+    plt.show()
 
 #masterflat(jasminepath)
 gain(jasminepath)
