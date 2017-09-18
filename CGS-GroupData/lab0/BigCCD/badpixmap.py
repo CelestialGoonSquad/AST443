@@ -1,5 +1,7 @@
 #Jasmine Garani, Lorena Mezini, Patrick Payne
 #Start date 9/13/17
+#Purpose: this code builds the bad pixel map for a master flat
+# and it determines the ratio of warm and hot pixels to the total pixels
 
 import numpy as np
 from astropy.io import fits
@@ -7,10 +9,6 @@ import os
 import warnings
 from astropy.utils.exceptions import AstropyWarning
 warnings.simplefilter('ignore',category=AstropyWarning)
-import matplotlib
-import matplotlib.pyplot as plt
-from scipy import stats
-from scipy.stats import norm
 
 
 #==========================================================================
@@ -19,30 +17,33 @@ jasminepath = "/Users/Jasmine/Documents/stony_brook/y4_sb/ast443/CGS-Groupdata/l
 lorenapath = "/home/icecube/AST/CGS-GroupData/AST443/CGS-GroupData/lab0/BigCCD/bigCCD-data/"
 patrickpath = "/Users/ilovealltigers/SBU_F17/AST_443/LAB1/CGS-GroupData/lab0/BigCCD/bigCCD-data/"
 
-path = jasminepath
+path = patrickpath
 
 def badpixmapping(path):
+    #Produces master flat array
     all_flats = []
-#    hdulist1 = fits.open(path + '/' + 'flat-expos23s-Neg5-Vis.00000009.FIT', ignore_missing_end=True)
     for f in os.listdir(path):
         if "flat" in f and "FIT" in f:
-            hdulist = fits.open(jasminepath + '/' + f,ignore_missing_end=True)
-            header = hdulist[0].header
+            hdulist = fits.open(path + '/' + f,ignore_missing_end=True)
             imagedata = hdulist[0].data
             norm_data = imagedata/np.median(imagedata)
             all_flats.append(norm_data)
 
-    
+        #Determines the median and normalizes
     master_flat = np.median(all_flats,axis=0)
     master_flat = master_flat/np.mean(master_flat)
 
+        #Flattens master flat
     masterflatten=master_flat.flatten()
-    
+
+        #Calculates the standard deviation and mean    
     std = np.std(masterflatten)
     mean = np.mean(masterflatten)
 
+        #Initialize bad pixel array
     badpix=np.zeros((1024,1024))
 
+        #Calculates and assigns value of 0 to dead pixels, and 1 to undead pix
     for i in range(0,len(master_flat[0])):
         for k in range(0,len(master_flat[1])):
             if master_flat[i][k] <= mean - 5.*std:
@@ -51,24 +52,19 @@ def badpixmapping(path):
                 badpix[i][k]=1
         
     ###########################################################
-    
+        #Opens and reads in data
     filename = 'darks-expos300s-Neg10-Vis.00000000.DARK.FIT'
-    filename3 = 'darks-expos300s-Neg5-Vis.00000000.DARK.FIT'
     hdulist2 = fits.open(path + '/' + filename)
-    hdulist3 = fits.open(path + '/' + filename3)
     imagedata2 = hdulist2[0].data
-    imagedata3 = hdulist3[0].data
     countvalues = imagedata2.flatten()
-    countvalues3 = imagedata3.flatten()
-    cmin2 = 950
     cmax2 = 1150
-    nbins2 = 100
 
-    normalization = ((cmax2-cmin2)/nbins2)*len(countvalues[(countvalues>=cmin2) & (countvalues<=cmax2)])
+        #Calculates mean and standard deviation
     meandark = np.mean(countvalues) #mean of single image
     sigdark = np.std(countvalues[countvalues<=cmax2]) #standard deviation of single image
 
 
+       #Calculates and assigns value of 0 to the hot pixels, and preserves the dead pixels
     for i in range(0,len(imagedata2[0])):
         for k in range(0,len(imagedata2[1])):
             if imagedata2[i][k] >= meandark + 5.*sigdark or badpix[i][k] == 0: 
@@ -76,60 +72,60 @@ def badpixmapping(path):
             else:
                 badpix[i][k]=1
                 
-
-
-                
-    warmcount10=0
-    hotcount10=0
-    for i in range(0,len(imagedata2[0])):
-        for k in range(0,len(imagedata2[1])):
-            if imagedata2[i][k] >= meandark + 3.0*sigdark: 
-                warmcount10=warmcount10+1
-                if imagedata2[i][k] >= meandark + 5.0*sigdark: 
-                    hotcount10=hotcount10+1
-
-    normalization = ((cmax2-cmin2)/nbins2)*len(countvalues3[(countvalues3>=cmin2) & (countvalues3<=cmax2)])
-    meandark3 = np.mean(countvalues3) #mean of single image
-    sigdark3 = np.std(countvalues3[countvalues3<=cmax2]) #standard deviation of single image
-
-    
-    warmcount5=0
-    hotcount5=0
-    for i in range(0,len(imagedata3[0])):
-        for k in range(0,len(imagedata3[1])):
-            if imagedata3[i][k] >= meandark3 + 3.0*sigdark3: 
-                warmcount5=warmcount5+1
-                if imagedata3[i][k] >= meandark3 + 5.0*sigdark3: 
-                    hotcount5=hotcount5+1
-
-    totalpix=1024.0**2
-    warm5ratio=warmcount5/totalpix
-    hot5ratio=hotcount5/totalpix
-    warm10ratio=warmcount10/totalpix
-    hot10ratio=hotcount10/totalpix
-    
-    print "Temperature: -5 Celsius"
-    print "Warm Ratio: ", warm5ratio
-    print "Hot Ratio: ", hot5ratio
-
-    print "==========================================="
-
-    print "Temperature: -10 Celsius"
-    print "Warm Ratio: ", warm10ratio
-    print "Hot Ratio: ", hot10ratio
-    
-                    
+            #Writes out bad pixel map
     badpixmap = fits.PrimaryHDU(badpix)
     badpixmap.writeto('badpixmap-Neg05.fits',clobber=True)
 
+#===================================EndOfFunction===========================================    
+
+def warmhotratio(temp):
+        #Imports and flattens data
+    filename = 'darks-expos300s-' + temp + '-Vis.00000000.DARK.FIT'
+    hdulist = fits.open(path + '/' + filename)
+    imagedata = hdulist[0].data
+    countvalues = imagedata.flatten()
+    cmax = 1150
+
+        #Calculation of the mean and standard deviation
+    meandark = np.mean(countvalues) #mean of single image
+    sigdark = np.std(countvalues[countvalues<=cmax]) #standard deviation of single image
+                
+        #Initializes warm and hot counts and ratios
+    warmcount=0
+    warmratio=0
+    hotcount=0
+    hotratio=0
+
+        #Loops over the data and determines if a pixel is warm and/or hot
+    for i in range(0,len(imagedata[0])):
+        for k in range(0,len(imagedata[1])):
+            if imagedata[i][k] >= meandark + 3.0*sigdark: 
+                warmcount=warmcount+1
+                if imagedata[i][k] >= meandark + 5.0*sigdark: 
+                    hotcount=hotcount+1
+    
+        #Calculates the ratios compared to the total
+    total=(1024.0)**2
+    warmratio=warmcount/total
+    hotratio=hotcount/total
+
+        #Prints the desired values    
+    print "Temperature: ", temp
+    print "Warm Ratio: ", warmratio
+    print "Hot Ratio: ", hotratio
+
+    print "==========================================="
 
 
 
-    
-    
-    
+
+
+#===================================EndOfFunction===========================================    
+
+warmhotratio("Neg5")
+warmhotratio("Neg10")
 badpixmapping(path)                
 
 #THE END, i'll try harder next time :(
 
-#==============================================================================
+
