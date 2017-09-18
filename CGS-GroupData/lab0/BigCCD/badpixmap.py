@@ -18,6 +18,7 @@ from scipy.stats import norm
 jasminepath = "/Users/Jasmine/Documents/stony_brook/y4_sb/ast443/CGS-Groupdata/lab0/BigCCD/bigCCD-data/"
 lorenapath = "/home/icecube/AST/CGS-GroupData/AST443/CGS-GroupData/lab0/BigCCD/bigCCD-data/"
 patrickpath = "/Users/ilovealltigers/SBU_F17/AST_443/LAB1/CGS-GroupData/lab0/BigCCD/bigCCD-data/"
+
 path = jasminepath
 
 def badpixmapping(path):
@@ -25,7 +26,6 @@ def badpixmapping(path):
 #    hdulist1 = fits.open(path + '/' + 'flat-expos23s-Neg5-Vis.00000009.FIT', ignore_missing_end=True)
     for f in os.listdir(path):
         if "flat" in f and "FIT" in f:
-            print f
             hdulist = fits.open(jasminepath + '/' + f,ignore_missing_end=True)
             header = hdulist[0].header
             imagedata = hdulist[0].data
@@ -47,7 +47,6 @@ def badpixmapping(path):
         for k in range(0,len(master_flat[1])):
             if master_flat[i][k] <= mean - 5.*std:
                 badpix[i][k]=0
-                print i,k
             else:
                 badpix[i][k]=1
         
@@ -68,7 +67,19 @@ def badpixmapping(path):
     normalization = ((cmax2-cmin2)/nbins2)*len(countvalues[(countvalues>=cmin2) & (countvalues<=cmax2)])
     meandark = np.mean(countvalues) #mean of single image
     sigdark = np.std(countvalues[countvalues<=cmax2]) #standard deviation of single image
-    
+
+
+    for i in range(0,len(imagedata2[0])):
+        for k in range(0,len(imagedata2[1])):
+            if imagedata2[i][k] >= meandark + 5.*sigdark or badpix[i][k] == 0: 
+                badpix[i][k]=0
+            else:
+                badpix[i][k]=1
+                
+
+
+    print meandark, sigdark
+                
     warmcount10=0
     hotcount10=0
     for i in range(0,len(imagedata2[0])):
@@ -81,6 +92,8 @@ def badpixmapping(path):
     normalization = ((cmax2-cmin2)/nbins2)*len(countvalues3[(countvalues3>=cmin2) & (countvalues3<=cmax2)])
     meandark3 = np.mean(countvalues3) #mean of single image
     sigdark3 = np.std(countvalues3[countvalues3<=cmax2]) #standard deviation of single image
+
+    print meandark3, sigdark3
     
     warmcount5=0
     hotcount5=0
