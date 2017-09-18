@@ -78,7 +78,6 @@ def badpixmapping(path):
                 
 
 
-    print meandark, sigdark
                 
     warmcount10=0
     hotcount10=0
@@ -93,7 +92,6 @@ def badpixmapping(path):
     meandark3 = np.mean(countvalues3) #mean of single image
     sigdark3 = np.std(countvalues3[countvalues3<=cmax2]) #standard deviation of single image
 
-    print meandark3, sigdark3
     
     warmcount5=0
     hotcount5=0
