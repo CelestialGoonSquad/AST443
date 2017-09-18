@@ -84,9 +84,9 @@ def badpixmapping(path):
     hotcount10=0
     for i in range(0,len(imagedata2[0])):
         for k in range(0,len(imagedata2[1])):
-            if imagedata2[i][k] >= meandark + 3.*sigdark: 
+            if imagedata2[i][k] >= meandark + 3.0*sigdark: 
                 warmcount10=warmcount10+1
-                if imagedata2[i][k] >= meandark + 5.*sigdark: 
+                if imagedata2[i][k] >= meandark + 5.0*sigdark: 
                     hotcount10=hotcount10+1
 
     normalization = ((cmax2-cmin2)/nbins2)*len(countvalues3[(countvalues3>=cmin2) & (countvalues3<=cmax2)])
@@ -99,12 +99,12 @@ def badpixmapping(path):
     hotcount5=0
     for i in range(0,len(imagedata3[0])):
         for k in range(0,len(imagedata3[1])):
-            if imagedata3[i][k] >= meandark3 + 3.*sigdark3: 
+            if imagedata3[i][k] >= meandark3 + 3.0*sigdark3: 
                 warmcount5=warmcount5+1
-                if imagedata3[i][k] >= meandark3 + 5.*sigdark3: 
+                if imagedata3[i][k] >= meandark3 + 5.0*sigdark3: 
                     hotcount5=hotcount5+1
 
-    totalpix=1024**2
+    totalpix=1024.0**2
     warm5ratio=warmcount5/totalpix
     hot5ratio=hotcount5/totalpix
     warm10ratio=warmcount10/totalpix
