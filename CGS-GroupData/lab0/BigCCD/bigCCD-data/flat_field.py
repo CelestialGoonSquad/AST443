@@ -62,7 +62,7 @@ def gain(path):
     #x2 = np.arange(17000,25000,0.001)
     #plt.plot(x2,norm.pdf(x2,mu,stdt),label='Gaussian')
     
-    lower_bound = 440
+    lower_bound = 440 #get center out of flat
     upper_bound = 580
     centerbox = np.zeros((140,140))
     for i in range(lower_bound,upper_bound):
