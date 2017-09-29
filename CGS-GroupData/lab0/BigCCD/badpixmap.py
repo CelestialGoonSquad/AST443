@@ -17,7 +17,7 @@ jasminepath = "/Users/Jasmine/Documents/stony_brook/y4_sb/ast443/CGS-Groupdata/l
 lorenapath = "/home/icecube/AST/CGS-GroupData/AST443/CGS-GroupData/lab0/BigCCD/bigCCD-data/"
 patrickpath = "/Users/ilovealltigers/SBU_F17/AST_443/LAB1/CGS-GroupData/lab0/BigCCD/bigCCD-data/"
 
-path = patrickpath
+path = jasminepath
 
 def badpixmapping(path):
     #Produces master flat array
