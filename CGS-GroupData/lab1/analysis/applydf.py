@@ -12,6 +12,8 @@ lorenanewpath = "/home/lmezini/lab1/calibrated"
 jasminepath = '/home/jgarani/AST443/CGS-GroupData/lab1/raw-data/'
 jasminenewpath = '/home/jgarani/AST443/CGS-GroupData/lab1/calibration/'
 
+#testing testing 123
+
 path = jasminepath
 newpath = jasminenewpath
 
