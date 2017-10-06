@@ -5,6 +5,8 @@ import warnings
 from astropy.utils.exceptions import AstropyWarning
 warnings.simplefilter('ignore',category=AstropyWarning)
 
+#test change
+
 lorenapath = "/home/lmezini/lab1"
 lorenanewpath = "/home/lmezini/lab1/calibrated"
 jasminepath = '/home/jgarani/AST443/CGS-GroupData/lab1/raw-data/'
