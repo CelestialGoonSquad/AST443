@@ -5,14 +5,14 @@ import warnings
 from astropy.utils.exceptions import AstropyWarning
 warnings.simplefilter('ignore',category=AstropyWarning)
 
-lorenapath = "/home/lmezini/lab1"
-lorenanewpath = "/home/lmezini/lab1/calibrated"
+lorenapath = "/home/lmezini/AST443/CGS-GroupData/lab1/"
+lorenanewpath = "/home/lmezini/AST443/CGS-GroupData/lab1/calibration/"
 jasminepath = '/home/jgarani/AST443/CGS-GroupData/lab1/raw-data/'
 jasminenewpath = '/home/jgarani/AST443/CGS-GroupData/lab1/calibration/'
 
 
-path = jasminepath
-newpath = jasminenewpath
+path = lorenapath
+newpath = lorenanewpath
 
 def applydf(path,newpath):
     all_files = []
@@ -30,8 +30,8 @@ def applydf(path,newpath):
             hdulist = fits.open(path + '/' + f, ignore_missing_end=True)
             header = hdulist[0].header
             imagedata = hdulist[0].data
-            df_sci = (imagedata.flatten()-dark_data.flatten())/flat_data.flatten()
+            df_sci = (imagedata-dark_data)/flat_data
             newhdu = fits.PrimaryHDU(df_sci)
-            newhdu.writeto(newpath+'/df-'+f,overwrite=True)
+            newhdu.writeto(newpath+'/df-'+f,clobber=True)
     
 applydf(path,newpath)
