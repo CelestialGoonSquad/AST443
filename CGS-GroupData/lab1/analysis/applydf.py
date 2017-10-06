@@ -5,7 +5,11 @@ import warnings
 from astropy.utils.exceptions import AstropyWarning
 warnings.simplefilter('ignore',category=AstropyWarning)
 
+<<<<<<< HEAD
 #test change stuffy stuff stuff :)
+=======
+
+>>>>>>> 11174347dd265643cdab3c27809e8666509c8d72
 
 lorenapath = "/home/lmezini/lab1"
 lorenanewpath = "/home/lmezini/lab1/calibrated"
