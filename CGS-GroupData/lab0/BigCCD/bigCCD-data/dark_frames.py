@@ -91,6 +91,7 @@ def DarkCurrent(path,temp,master):
             mast_hdulist = fits.open(path + '/' + master)
             mast_imagedata = mast_hdulist[0].data
             dark_current = dark_imagedata.flatten() - mast_imagedata.flatten()
+            
             mode = stats.mode(dark_current)[0][0]
             median = np.median(dark_current) #we have decided to use median not mode because of how gaussain looks
             counts.append(median)
