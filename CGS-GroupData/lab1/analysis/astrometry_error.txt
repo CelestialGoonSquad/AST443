@@ -1,0 +1,17 @@
+Reading input file 1 of 1: "df-L1-sci.00000000.FIT"...
+Extracting sources...
+simplexy: found 375 sources.
+solve-field.c:326:plot_source_overlay Plotting command failed
+ solve-field.c:132:run_command Command was: "/usr/local/astrometry/bin/plotxy -I /tmp/tmp.ppm.dtW7sz -i ./df-L1-sci.00000000.axy -C red -w 2 -N 50 -x 1 -y 1 -P | /usr/local/astrometry/bin/plotxy -i ./df-L1-sci.00000000.axy -I - -w 2 -r 3 -C red -n 50 -N 200 -x 1 -y 1 > ./df-L1-sci.00000000-objs.png"
+
+ solve-field.c:131:run_command Command exited with exit status 134
+Solving...
+Warning: failed to open index directory: "/usr/local/astrometry/data"
+
+
+---------------------------------------------------------------------
+You must list at least one index in the config file (/usr/local/astrometry/bin/../etc/astrometry.cfg)
+
+See http://astrometry.net/use.html about how to get some index files.
+---------------------------------------------------------------------
+
