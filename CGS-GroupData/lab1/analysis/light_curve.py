@@ -22,13 +22,14 @@ dates =[]
 filenames = []
 
 #create lists of lists for variables for the 10 extra objects
-names = [[] for _ in range(10)]
+names = [[] for _ in range(10)] #each list has 10 lists in it for each object
 fref = [[] for _ in range(10)]
 eref = [[] for _ in range(10)]
 
 for f in os.listdir(path):
     #find our science object
     if "hd" in f and "txt" in f:
+        #print f
         name = np.genfromtxt(str(path)+'/'+str(f),dtype = str,usecols = 0)
         RA = np.genfromtxt(str(path)+'/'+str(f),usecols = 1)
         DEC = np.genfromtxt(str(path)+'/'+str(f),usecols = 2)
@@ -47,27 +48,35 @@ for f in os.listdir(path):
             scierr.append(star_escaled[i])
             sciname.append(name[i])
     #get names of txt files for other objects
-    if "time_flux" in f and "hd" not in f:
+    if "time_flux" in f and "hd" not in f and '~' not in f:
         filenames.append(f)
 
 i = 0
 for f in filenames:
-    print f
     #repeat process for extra objects
     name = np.genfromtxt(str(path)+'/'+str(f),dtype = str,usecols = 0)
     RA = np.genfromtxt(str(path)+'/'+str(f),usecols = 1)
     DEC = np.genfromtxt(str(path)+'/'+str(f),usecols = 2)
     flux = np.genfromtxt(str(path)+'/'+str(f),usecols = 3)
     error = np.genfromtxt(str(path)+'/'+str(f),usecols = 4)
+    ref_fscaled, ref_escaled = flux_calc(flux,error) #scaled fluxes and errors for reference images
     j = 0
     #add values to list of lists
     for j in range(len(name)):
         names[i].append(name[j])
-        fref[i].append(flux[j])
-        eref[i].append(error[j])
+        fref[i].append(ref_fscaled[j])
+        eref[i].append(ref_escaled[j])
         j = j +1
     i = i+1
-   
+    t_refstar = []
+    
+    for w in range(len(name)):
+        t_refstar.append(w)
+    plt.plot(t_refstar, ref_fscaled,label = str(f))
+    plt.legend()
+plt.show()
+
+  
 #create list for averaged flux and error over non-sci objects
 us = []
 uerrs = []
@@ -82,6 +91,8 @@ for k in range(len(names[1])):
         uerrs.append(uerr)
     else:
         print names[1][k],sciname[k]
+
+print sciname[544]
 t = []
 for k in range(len(sciflux)):
     print dates[k],sciflux[k],scierr[k],us[k],uerrs[k],sciflux[k]/us[k]
