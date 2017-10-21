@@ -3,10 +3,11 @@ import matplotlib.pyplot as plt
 from astropy.io import fits
 import os
 
+patpath = '/Users/ilovealltigers/SBU_F17/AST_443/LAB1/CGS-GroupData/lab1/calibration2'
 lorenapath = '/home/lmezini/AST443/CGS-GroupData/lab1/calibration2'
 jasminepath = '/home/jgarani/AST443/CGS-GroupData/lab1/calibration2'
 
-path = lorenapath
+path = patpath
 
 #create function to calcualte scaled flux and error
 def flux_calc(flux,error):
@@ -20,6 +21,7 @@ scierr = []
 sciname = []
 dates =[]
 filenames = []
+ignore = []         #array for lines to be ignored due to deviation
 
 #create lists of lists for variables for the 10 extra objects
 names = [[] for _ in range(10)] #each list has 10 lists in it for each object
@@ -40,13 +42,16 @@ for f in os.listdir(path):
         star_escaled = flux_calc(flux,error)[1]
         #open fits files to get time
         for i in range(len(name)):
-            hdulist = fits.open(str(path)+'/'+str(name[i])[:-3]+'new',ignore_missing_end=True)
-            header = hdulist[0].header
-            date = header['DATE']
-            dates.append(date)
-            sciflux.append(star_fscaled[i])
-            scierr.append(star_escaled[i])
-            sciname.append(name[i])
+            if star_fscaled[i] < (1.0 - 3*star_escaled[i]) or star_fscaled[i] > (1.0 + 3*star_escaled[i]):
+                ignore.append(i)
+            else:
+                hdulist = fits.open(str(path)+'/'+str(name[i])[:-3]+'new',ignore_missing_end=True)
+                header = hdulist[0].header
+                date = header['DATE']
+                dates.append(date)
+                sciflux.append(star_fscaled[i])
+                scierr.append(star_escaled[i])
+                sciname.append(name[i])
     #get names of txt files for other objects
     if "time_flux" in f and "hd" not in f and '~' not in f:
         filenames.append(f)
@@ -62,11 +67,14 @@ for f in filenames:
     ref_fscaled, ref_escaled = flux_calc(flux,error) #scaled fluxes and errors for reference images
     j = 0
     #add values to list of lists
-    for j in range(len(name)):
-        names[i].append(name[j])
-        fref[i].append(ref_fscaled[j])
-        eref[i].append(ref_escaled[j])
-        j = j +1
+    for j in range(len(name)):        
+        if ref_fscaled[i] < (1.0 - 3*ref_escaled[i]) or ref_fscaled[i] > (1.0 + 3*ref_escaled[i]):
+            ignore.append(i)
+        else:        
+            names[i].append(name[j])
+            fref[i].append(ref_fscaled[j])
+            eref[i].append(ref_escaled[j])
+            j = j +1
     i = i+1
     t_refstar = []
     
