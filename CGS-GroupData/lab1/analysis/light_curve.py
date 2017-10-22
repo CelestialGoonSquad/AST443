@@ -131,18 +131,33 @@ for i in range(len(sciflux)):  # calculates normalized ri
 
 # Binning of the data
 
+binedData = []    #place where data goes after it is bined
 userBinSize = 300 #Length of each bin in seconds
 imagesInBin = userBinSize // 20
 actualBinSize = imagesInBin * 20
 numBins = len(ri)//imagesInBin
+last_bin = len(ri) % imagesInBin
+
+for i in range(0,numBins):  #calculates the value for each bin according to bin size
+    sum = 0
+    start = i*imagesInBin          #bin boundaries
+    end = ((i+1)*imagesInBin) - 1
+    for k in range(start,end):
+        sum = ri[k] + sum
+    average = sum / imagesInBin
+    binedData.append(average)      # value for a bin
+    if i == numBins  and last_bin > 0:   #calculation if bins dont cover all ri values
+        for k in range (0,last_bin):
+            sum = ri[k] + sum
+        lastavg = sum / last_bin
+        binedData.append(lastavg)
+        
 print len(ri)
 print numBins,imagesInBin,actualBinSize
 bins = []
 for i in range(0,(numBins+1)):
     bins.append(i)
-binedData = np.histogram(ri)
-binedData = binedData[0]
-print "Bined Dat: ", binedData
+print "Bined Data: ", binedData
 print "bins: ", bins
 
 # I/O stuffs
@@ -153,8 +168,8 @@ for k in range(len(sciflux)):
 for k in range(len(sciflux)):
     t.append(k)
 
-#plt.plot(bins,binedData,linestyle = "none",marker='o')
-#plt.plot(t,ri,linestyle = "none")
+plt.plot(bins,binedData,linestyle = "none",marker='o')
+#plt.plot(t,ri,linestyle = "none",marker='x')
 #plt.plot(t,mus)
 #plt.ylim(0.8,1.10)
 plt.show()
