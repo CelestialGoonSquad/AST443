@@ -63,7 +63,7 @@ for f in os.listdir(path):
 
 baseline = np.mean(fluxpretran)
 errbase = np.mean(errpretran)
-print "baseline and error: ", baseline,errbase
+#print "baseline and error: ", baseline,errbase
 
 i = 0
 for f in filenames:
@@ -80,7 +80,6 @@ for f in filenames:
         if ref_fscaled[j] < 0.8 or ref_fscaled[j] > 1.2:
             if j not in ignore:                
                 ignore.append(j)
-                print ignore
         names[i].append(name[j])
         fref[i].append(ref_fscaled[j])
         eref[i].append(ref_escaled[j])
@@ -123,31 +122,39 @@ for k in range(len(names[1])):
         mus.append(munum/mudenom)
         muerrs.append(muerr)
     else:
-        print names[1][k],sciname[k]
-
+        #print names[1][k],sciname[k]
+        pass
 for i in range(len(sciflux)):  # calculates normalized ri
     divtemp = sciflux[i]/(mus[i]*baseline)
     ri.append(divtemp)
-print ri
+
 
 # Binning of the data
 
 userBinSize = 300 #Length of each bin in seconds
-imagesInBin = userbinsize // 20
-actualBinSize = imagesinbin * 20
-numBins = len(ri)/actualbinsize
-binedData = np.histogram(ri,numbins)
-
+imagesInBin = userBinSize // 20
+actualBinSize = imagesInBin * 20
+numBins = len(ri)//imagesInBin
+print len(ri)
+print numBins,imagesInBin,actualBinSize
+bins = []
+for i in range(0,(numBins+1)):
+    bins.append(i)
+binedData = np.histogram(ri)
+binedData = binedData[0]
+print "Bined Dat: ", binedData
+print "bins: ", bins
 
 # I/O stuffs
 t = []
 for k in range(len(sciflux)):
-    print k,dates[k],sciflux[k],scierr[k],mus[k],muerrs[k],sciflux[k]/mus[k]
+    #print k,dates[k],sciflux[k],scierr[k],mus[k],muerrs[k],sciflux[k]/mus[k]
+    pass
 for k in range(len(sciflux)):
     t.append(k)
 
-plt.plot(t,binedData,linestyle = (none))
-plt.plot(t,ri,linestyle = (none)))
+#plt.plot(bins,binedData,linestyle = "none",marker='o')
+#plt.plot(t,ri,linestyle = "none")
 #plt.plot(t,mus)
 #plt.ylim(0.8,1.10)
 plt.show()
