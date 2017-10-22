@@ -1,4 +1,5 @@
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 from astropy.io import fits
 import os
@@ -129,15 +130,24 @@ for i in range(len(sciflux)):  # calculates normalized ri
     ri.append(divtemp)
 print ri
 
-#print sciname[544]
+# Binning of the data
+
+userBinSize = 300 #Length of each bin in seconds
+imagesInBin = userbinsize // 20
+actualBinSize = imagesinbin * 20
+numBins = len(ri)/actualbinsize
+binedData = np.histogram(ri,numbins)
+
+
+# I/O stuffs
 t = []
 for k in range(len(sciflux)):
     print k,dates[k],sciflux[k],scierr[k],mus[k],muerrs[k],sciflux[k]/mus[k]
 for k in range(len(sciflux)):
     t.append(k)
 
-plt.plot(t,ri)
+plt.plot(t,binedData,linestyle = (none))
+plt.plot(t,ri,linestyle = (none)))
 #plt.plot(t,mus)
-plt.ylim(0.8,1.10)
-
+#plt.ylim(0.8,1.10)
 plt.show()
