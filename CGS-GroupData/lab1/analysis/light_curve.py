@@ -153,6 +153,20 @@ for k in range(len(sciflux)):
 for k in range(len(sciflux)):
     t.append(k)
 
+#Calculate the times, put everything into seconds
+times = []
+for w in os.listdir(path):
+    if '.FIT' in w:
+        fortimehdulist = fits.open(path + '/' + w)
+        fortimeheader = fortimehdulist[0].header
+        indtime = fortimeheader['TIME-OBS']
+        htos = indtime[0:2] * 3600.
+        mtos = indtime[3:5] * 60.
+        sec = indtime[6:]
+        totsec = htos+mtos+sec
+        print totsec
+        break
+
 #plt.plot(bins,binedData,linestyle = "none",marker='o')
 #plt.plot(t,ri,linestyle = "none")
 #plt.plot(t,mus)
