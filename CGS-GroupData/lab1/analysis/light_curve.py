@@ -29,6 +29,8 @@ fluxaftertran = []
 erraftertran = []
 totfluxforbase = []
 errtotfluxforbase = []
+fluxtran = []
+errtran = []
 
 #create lists of lists for variables for the 10 extra objects
 names = [[] for _ in range(10)] #each list has 10 lists in it for each object
@@ -61,11 +63,14 @@ for f in os.listdir(path):
                 errpretran.append(error[i])
                 totfluxforbase.append(flux[i])
                 errtotfluxforbase.append(error[i])
-            if i >= index503:
+            else if i >= index503:
                 fluxaftertran.append(flux[i])
                 erraftertran.append(error[i])
                 totfluxforbase.append(flux[i])
                 errtotfluxforbase.append(error[i])
+            else:
+                fluxtran.append(flux[i])
+                errtran.append(error[i])
             scierr.append(error[i])
             sciname.append(name[i])
     #get names of txt files for other objects
@@ -251,6 +256,26 @@ print "Depth Method 2 (depth,%): ", depth2, depth2_prcnt
 #Determine error in transit depth
 
 # -----------------------???
+
+
+
+# Planet star radius ratio
+# equation for ratio r/R = sqrt( 1 - transit flux / baseline flux)
+
+f2 = avg_trans
+f1 = avg_non_trans
+
+ratio_squared = 1 - (f2/f1)
+ratio = np.sqrt(ratio_squared)
+
+#part_err_ratio_sq = (err_f2/f1)
+#part2_err_ratio_sq= ((f2*err_f1)/(f1**2))
+#err_ratio_squared = np.sqrt( part_err_ratio_sq**2 + part2_err_ratio_sq**2)
+
+#err_ratio = 0.5 * err_ratio_squared * np.sqrt(1/ratio)
+output = r'\frac{r_{p}}{R_{s}}: ' ratio # r'\pm' err_ratio
+print output
+
 
 
 # I/O stuffs
