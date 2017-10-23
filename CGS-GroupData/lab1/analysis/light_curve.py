@@ -218,11 +218,11 @@ avg_pre   = np.mean(pre_trans)
 avg_trans  = np.mean(trans)
 avg_post  = np.mean(post_trans)
 
-depth = (avg_pre + avg_post)/2.0 - avg_eclp
+depth = (avg_pre + avg_post)/2.0 - avg_trans
 print "Transit Depth: ", depth
 # Other potential methods, not sure which is actually the best representation
-#depth = avg_pre - avg_eclp
-#depth = avg_post - avg_eclp
+#depth = avg_pre - avg_trans
+#depth = avg_post - avg_trans
 
 #Determine error in transit depth
 
