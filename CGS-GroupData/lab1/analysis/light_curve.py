@@ -1,4 +1,4 @@
-import numpy as np
+Aimport numpy as np
 import math
 import matplotlib.pyplot as plt
 from astropy.io import fits
@@ -166,6 +166,8 @@ print 'errris = ', errris
 binedData = []    #place where data goes after it is bined
 userBinSize = 300 #Length of each bin in seconds
 imagesInBin = userBinSize // 20
+if imagesInBin <= 0:
+    imagesInBin = 1
 actualBinSize = imagesInBin * 20
 numBins = len(ri)//imagesInBin
 last_bin = len(ri) % imagesInBin
