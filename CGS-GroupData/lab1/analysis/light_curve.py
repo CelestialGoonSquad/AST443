@@ -209,7 +209,7 @@ post_trans = []
 for i in range (0,numBins):
     if binedTime[i] < times[177]:
         pre_trans.append(binedData[i]) #builds array of pre transit normalized flux
-    else if binedTime[i] > times[503]:
+    elif binedTime[i] > times[503]:
         post_trans.append(binedData[i]) #builds array of post transit normalized flux
     else:
         trans.append(binedData[i])      #builds array of transit normalized flux
