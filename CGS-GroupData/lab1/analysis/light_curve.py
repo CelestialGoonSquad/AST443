@@ -25,6 +25,10 @@ filenames = []
 ignore = []         #array for lines to be ignored due to deviation
 fluxpretran = []
 errpretran = []
+fluxaftertran = []
+erraftertran = []
+totfluxforbase = []
+errtotfluxforbase = []
 
 #create lists of lists for variables for the 10 extra objects
 names = [[] for _ in range(10)] #each list has 10 lists in it for each object
@@ -55,15 +59,24 @@ for f in os.listdir(path):
             if i <= index177: 
                 fluxpretran.append(flux[i])
                 errpretran.append(error[i])
+                totfluxforbase.append(flux[i])
+                errtotfluxforbase.append(error[i])
+            if i >= index503:
+                fluxaftertran.append(flux[i])
+                erraftertran.append(error[i])
+                totfluxforbase.append(flux[i])
+                errtotfluxforbase.append(error[i])
             scierr.append(error[i])
             sciname.append(name[i])
     #get names of txt files for other objects
     if "time_flux" in f and "hd" not in f and '~' not in f:
         filenames.append(f)
 
-baseline = np.mean(fluxpretran)
-errbase = np.mean(errpretran)
-#print "baseline and error: ", baseline,errbase
+print len(totfluxforbase)
+baseline = np.mean(totfluxforbase)
+#errbase = np.mean(errpretran) #not the right way to do it I don't think 
+errbase = np.std(totfluxforbase,ddof=1)/np.sqrt(len(totfluxforbase))
+print "baseline and error: ", baseline,errbase
 
 i = 0
 for f in filenames:
@@ -164,7 +177,7 @@ print 'errris = ', errris
 # Binning of the data
 
 binedData = []    #place where data goes after it is bined
-userBinSize = 300 #Length of each bin in seconds
+userBinSize = 200 #Length of each bin in seconds
 imagesInBin = userBinSize // 20
 actualBinSize = imagesInBin * 20
 numBins = len(ri)//imagesInBin
@@ -221,16 +234,16 @@ avg_post  = np.mean(post_trans)
 avg_non_trans = (avg_pre + avg_post)/2.0
 
 depth =  avg_non_trans - avg_trans
-depth_prcnt = depth/avg_non_trans
+depth_prcnt = (depth/avg_non_trans) * 100.
 print "Transit Depth: ", depth
 print "Transit Depth %: ",depth_prcnt
 # Other potential methods, not sure which is actually the best representation
 
 depth1 = avg_pre - avg_trans
-depth1_prcnt = depth1/avg_pre
+depth1_prcnt = (depth1/avg_pre) * 100.
 print "Depth Method 2 (depth,%): ", depth1, depth1_prcnt
 depth2 = avg_post - avg_trans
-depth2_prcnt = depth2/avg_post
+depth2_prcnt = (depth2/avg_post) * 100
 print "Depth Method 2 (depth,%): ", depth2, depth2_prcnt
 
 #Determine error in transit depth
