@@ -1,4 +1,4 @@
-Aimport numpy as np
+import numpy as np
 import math
 import matplotlib.pyplot as plt
 from astropy.io import fits
