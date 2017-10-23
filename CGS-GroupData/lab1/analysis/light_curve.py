@@ -179,29 +179,55 @@ for i in range(0,numBins):  #calculates the value for each bin according to bin 
     average = sum / imagesInBin
     binedData.append(average)      # value for a bin
     if i == numBins  and last_bin > 0:   #calculation if bins dont cover all ri values
-        for k in range (0,last_bin):
+        last_bin_left = end + 1
+        last_bin_right = end + last_bin
+        for k in range (last_bin_left,last_bin_right):
             sum = ri[k] + sum
         lastavg = sum / last_bin
         binedData.append(lastavg)
         
-print len(ri)
-print numBins,imagesInBin,actualBinSize
-bins = []
+bins = [] #makes bin by bin number
 for i in range(0,(numBins)):
     bins.append(i)
-print "Bined Data: ", binedData
-print "bins: ", bins
 
 #do the bining stuff for the times now
 binedTime = []
 for i in range(0,numBins):   #calculates the value for each bin according to bin size
-    sum = 0
     start = i*imagesInBin     #bin boundaries
     end = ((i+1)*imagesInBin) - 1
     binedTimei = (times[start] + times[end])/2.
     binedTime.append(binedTimei)
 print 'binedTime array = ', binedTime
 print 'len of binedTime array = ', len(binedTime)
+
+#Determine the transit depth
+
+pre_trans = []
+trans = []
+post_trans = []
+
+for i in range (0,numBins):
+    if binedTime[i] < times[177]:
+        pre_trans.append(binedData[i]) #builds array of pre transit normalized flux
+    else if binedTime[i] > times[503]:
+        post_trans.append(binedData[i]) #builds array of post transit normalized flux
+    else:
+        trans.append(binedData[i])      #builds array of transit normalized flux
+
+avg_pre   = np.mean(pre_trans)
+avg_trans  = np.mean(trans)
+avg_post  = np.mean(post_trans)
+
+depth = (avg_pre + avg_post)/2.0 - avg_eclp
+print "Transit Depth: ", depth
+# Other potential methods, not sure which is actually the best representation
+#depth = avg_pre - avg_eclp
+#depth = avg_post - avg_eclp
+
+#Determine error in transit depth
+
+# -----------------------???
+
 
 # I/O stuffs
 t = []
@@ -212,9 +238,8 @@ for k in range(len(sciflux)):
     t.append(k)
 
 
-
-
-
+#Plotting Jazz! Doobie do bop, groovie!!
+    
 plt.plot(binedTime,binedData,linestyle='none',marker='o',label = 'HD 189733')
 plt.errorbar(binedTime,binedData,yerr=errri,linestyle='none',color='black')
 #plt.plot(bins,binedData,linestyle = "none",marker='o')
