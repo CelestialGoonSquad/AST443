@@ -90,17 +90,42 @@ for f in filenames:
     for w in range(len(name)):
         t_refstar.append(w)
 
-
+    print 'length of t_refstar after = ', len(t_refstar)
     # removes problem children...actually just the problem images
     t_refstar = np.delete(t_refstar,ignore)
     ref_fscaled = np.delete(ref_fscaled,ignore)
     #plt.plot(t_refstar, ref_fscaled,label = str(f))
     #plt.legend()
 #plt.show()
+print 'length of t_refstar before = ', len(t_refstar)
+
+
+
+#Calculate the times, put everything into seconds
+times = []
+first = 0
+for w in names[0]:
+    new = w.replace('.cat','.FIT')
+    fortimehdulist = fits.open(path + '/' + new)
+    fortimeheader = fortimehdulist[0].header
+    indtime = fortimeheader['TIME-OBS']
+    htos = int(indtime[0:2]) * 3600.
+    mtos = int(indtime[3:5]) * 60.
+    sec = float(indtime[6:])
+    totsec = htos+mtos+sec
+    if first == 0:
+        firsttime = totsec
+        totsec = totsec - firsttime
+        first = 1
+    else:
+        totsec = totsec - firsttime
+    times.append(totsec)
 
 # removes the problem images... we've already dealt with the children :)
+times = np.delete(times,ignore)
 sciflux = np.delete(sciflux,ignore)
 sciname = np.delete(sciname,ignore)
+scierr = np.delete(scierr,ignore)
 for k in range(0,10):
     names[k] = np.delete(names[k],ignore)
     fref[k] = np.delete(fref[k],ignore)
@@ -111,7 +136,7 @@ for k in range(0,10):
 mus = []
 muerrs = []
 ri = []
-
+errris = []
 
 for k in range(len(names[1])):
     if names[1][k] == sciname[k]:
@@ -124,10 +149,17 @@ for k in range(len(names[1])):
     else:
         #print names[1][k],sciname[k]
         pass
+
 for i in range(len(sciflux)):  # calculates normalized ri
     divtemp = sciflux[i]/(mus[i]*baseline)
     ri.append(divtemp)
-
+    partialsciflux = scierr[i]/(mus[i]*baseline)
+    partialmu = -(muerrs[i]*sciflux[i])/((mus[i])**2 * baseline)
+    partialbaseline = -(errbase*sciflux[i])/(mus[i]*baseline**2)
+    errri = np.sqrt(partialsciflux**2 + partialmu**2 + partialbaseline**2)
+    errris.append(errri)
+print 'len(errris) = ', len(errris)
+print 'errris = ', errris
 
 # Binning of the data
 
@@ -155,10 +187,21 @@ for i in range(0,numBins):  #calculates the value for each bin according to bin 
 print len(ri)
 print numBins,imagesInBin,actualBinSize
 bins = []
-for i in range(0,(numBins+1)):
+for i in range(0,(numBins)):
     bins.append(i)
 print "Bined Data: ", binedData
 print "bins: ", bins
+
+#do the bining stuff for the times now
+binedTime = []
+for i in range(0,numBins):   #calculates the value for each bin according to bin size
+    sum = 0
+    start = i*imagesInBin     #bin boundaries
+    end = ((i+1)*imagesInBin) - 1
+    binedTimei = (times[start] + times[end])/2.
+    binedTime.append(binedTimei)
+print 'binedTime array = ', binedTime
+print 'len of binedTime array = ', len(binedTime)
 
 # I/O stuffs
 t = []
@@ -169,23 +212,16 @@ for k in range(len(sciflux)):
     t.append(k)
 
 
-#Calculate the times, put everything into seconds
-times = []
-for w in os.listdir(path):
-    if '.FIT' in w:
-        fortimehdulist = fits.open(path + '/' + w)
-        fortimeheader = fortimehdulist[0].header
-        indtime = fortimeheader['TIME-OBS']
-        htos = indtime[0:2] * 3600.
-        mtos = indtime[3:5] * 60.
-        sec = indtime[6:]
-        totsec = htos+mtos+sec
-        print totsec
-        break
 
 
-plt.plot(bins,binedData,linestyle = "none",marker='o')
+
+plt.plot(binedTime,binedData,linestyle='none',marker='o',label = 'HD 189733')
+plt.errorbar(binedTime,binedData,yerr=errri,linestyle='none',color='black')
+#plt.plot(bins,binedData,linestyle = "none",marker='o')
 #plt.plot(t,ri,linestyle = "none",marker='x')
 #plt.plot(t,mus)
 #plt.ylim(0.8,1.10)
+plt.xlabel(r'Times Elapsed (s)', fontsize=12)
+plt.ylabel(r'Relative Flux', fontsize=12)
+plt.legend(loc=1)
 plt.show()
