@@ -22,7 +22,7 @@ scierr = []             #error on the flux of the science object
 sciname = []            #array of science files to be used
 dates =[]
 filenames = []          #array of files to be used
-ignore = []             #array for lines to be ignored due to deviation
+ignore = [23,26,76]         #array for lines to be ignored due to deviation
 fluxpretran = []        #array of flux values for images before transit
 errpretran = []         #error in the flux values prior to transit
 fluxaftertran = []      #array of flux values for images after transit
@@ -38,12 +38,16 @@ muerrs = []             #weighted error for weighted averages of reference stars
 ri = []                 #normalized and corrected flux for science object
 errris = []             #error for normalized,corrected flux
 binedData = []          #place where data goes after it is bined
+binedError = []         #array of errors for bined values
 bins = []               #makes bin by bin number
 binedTime = []          #array of time at the center of a bin
 pre_trans = []          #array of normalized flux pre transit
 trans = []              #array of normalized flux during transity
 post_trans = []         #array of normalized flux post tranist
 t = []                  #array of file numbers for plotting
+
+
+
 
 #create lists of lists for variables for the 10 extra objects
 names = [[] for _ in range(10)] #each list has 10 lists in it for each object
@@ -63,7 +67,7 @@ for f in os.listdir(path):
         DEC = np.genfromtxt(str(path)+'/'+str(f),usecols = 2)
         flux = np.genfromtxt(str(path)+'/'+str(f),usecols = 3)
         error = np.genfromtxt(str(path)+'/'+str(f),usecols = 4)
-        
+
         #open fits files to get time
         for i in range(len(name)):
             hdulist = fits.open(str(path)+'/'+str(name[i])[:-3]+'new',ignore_missing_end=True)
@@ -71,30 +75,12 @@ for f in os.listdir(path):
             date = header['DATE']
             dates.append(date)
             sciflux.append(flux[i])
-            if i <= index177: 
-                fluxpretran.append(flux[i])
-                errpretran.append(error[i])
-                totfluxforbase.append(flux[i])
-                errtotfluxforbase.append(error[i])
-            else if i >= index503:
-                fluxaftertran.append(flux[i])
-                erraftertran.append(error[i])
-                totfluxforbase.append(flux[i])
-                errtotfluxforbase.append(error[i])
-            else:
-                fluxtran.append(flux[i])
-                errtran.append(error[i])
             scierr.append(error[i])
             sciname.append(name[i])
+
     #get names of txt files for other objects
     if "time_flux" in f and "hd" not in f and '~' not in f:
         filenames.append(f)
-
-print len(totfluxforbase)
-baseline = np.mean(totfluxforbase)
-#errbase = np.mean(errpretran) #not the right way to do it I don't think 
-errbase = np.std(totfluxforbase,ddof=1)/np.sqrt(len(totfluxforbase))
-print "baseline and error: ", baseline,errbase
 
 i = 0
 for f in filenames:
@@ -108,27 +94,27 @@ for f in filenames:
     j = 0
     for j in range(len(name)):        
 #        if ref_fscaled[j] < (1.0 - 10*ref_escaled[j]) or ref_fscaled[j] > (1.0 + 10*ref_escaled[j]):
-        if ref_fscaled[j] < 0.8 or ref_fscaled[j] > 1.2:
+        if ref_fscaled[j] < 0.4 or ref_fscaled[j] > 1.1:
             if j not in ignore:                
                 ignore.append(j)
         names[i].append(name[j])
         fref[i].append(ref_fscaled[j])
         eref[i].append(ref_escaled[j])
-        j = j+1
 
+    print ignore
     i = i+1
 #    t_refstar = []
     for w in range(len(name)):
         t_refstar.append(w)
 
-    print 'length of t_refstar after = ', len(t_refstar)
+    #print 'length of t_refstar after = ', len(t_refstar)
     # removes problem children...actually just the problem images
     t_refstar = np.delete(t_refstar,ignore)
     ref_fscaled = np.delete(ref_fscaled,ignore)
     #plt.plot(t_refstar, ref_fscaled,label = str(f))
     #plt.legend()
 #plt.show()
-print 'length of t_refstar before = ', len(t_refstar)
+#print 'length of t_refstar before = ', len(t_refstar)
 
 
 
@@ -162,6 +148,46 @@ for k in range(0,10):
     fref[k] = np.delete(fref[k],ignore)
     eref[k] = np.delete(eref[k],ignore)
 
+for i in range(0,len(ignore)):
+    if ignore[i] < index177:
+        index177 = index177 + 1
+        if ignore[i] < index503:
+            index503 = index503 + 1
+        else:
+            pass
+    else:
+        pass
+
+
+#open fits files to get time
+for i in range(len(sciflux)):
+    if i <= index177: 
+        fluxpretran.append(sciflux[i])
+        errpretran.append(error[i])
+        totfluxforbase.append(sciflux[i])
+        errtotfluxforbase.append(error[i])
+    elif i >= index503:
+        fluxaftertran.append(sciflux[i])
+        erraftertran.append(error[i])
+        totfluxforbase.append(sciflux[i])
+        errtotfluxforbase.append(error[i])
+    elif i < 420 and i > 292:
+        fluxtran.append(sciflux[i])
+        errtran.append(error[i])
+
+#print len(totfluxforbase)
+print fluxpretran
+print fluxtran
+print fluxaftertran
+
+tranline = np.mean(fluxtran)
+errtranbase = np.std(fluxtran,ddof=1)/np.sqrt(len(fluxtran))
+baseline = np.mean(totfluxforbase)
+#errbase = np.mean(errpretran) #not the right way to do it I don't think 
+errbase = np.std(totfluxforbase,ddof=1)/np.sqrt(len(totfluxforbase))
+print "baseline and error: ", baseline,errbase
+print "tranline and error: ", tranline,errtranbase
+
 
 #create list for averaged flux and error over non-sci objects
 #mus = []
@@ -189,28 +215,29 @@ for i in range(len(sciflux)):  # calculates normalized ri
     partialbaseline = -(errbase*sciflux[i])/(mus[i]*baseline**2)
     errri = np.sqrt(partialsciflux**2 + partialmu**2 + partialbaseline**2)
     errris.append(errri)
-print 'len(errris) = ', len(errris)
-print 'errris = ', errris
+#print 'len(errris) = ', len(errris)
+#print 'errris = ', errris
 
 # Binning of the data
 
-#binedData = []    #place where data goes after it is bined
-userBinSize = 200 #Length of each bin in seconds
+userBinSize = 300 #Length of each bin in seconds
 imagesInBin = userBinSize // 20
 if imagesInBin <= 0:
     imagesInBin = 1
 actualBinSize = imagesInBin * 20
 numBins = len(ri)//imagesInBin
 last_bin = len(ri) % imagesInBin
+average = []
 
 for i in range(0,numBins):  #calculates the value for each bin according to bin size
     sum = 0
     start = i*imagesInBin          #bin boundaries
     end = ((i+1)*imagesInBin) - 1
     for k in range(start,end):
-        sum = ri[k] + sum
-    average = sum / imagesInBin
-    binedData.append(average)      # value for a bin
+        average.append(ri[k])
+    binedData.append(np.mean(average))      # value for a bin
+    binedError.append(np.std(average)/np.sqrt(imagesInBin))
+    average = []
     if i == numBins  and last_bin > 0:   #calculation if bins dont cover all ri values
         last_bin_left = end + 1
         last_bin_right = end + last_bin
@@ -230,8 +257,8 @@ for i in range(0,numBins):   #calculates the value for each bin according to bin
     end = ((i+1)*imagesInBin) - 1
     binedTimei = (times[start] + times[end])/2.
     binedTime.append(binedTimei)
-print 'binedTime array = ', binedTime
-print 'len of binedTime array = ', len(binedTime)
+#print 'binedTime array = ', binedTime
+#print 'len of binedTime array = ', len(binedTime)
 
 #Determine the transit depth
 
@@ -240,31 +267,39 @@ print 'len of binedTime array = ', len(binedTime)
 #post_trans = []
 
 for i in range (0,numBins):
-    if binedTime[i] < times[177]:
+    if binedTime[i] < times[index177]:
         pre_trans.append(binedData[i]) #builds array of pre transit normalized flux
-    elif binedTime[i] > times[503]:
+    elif binedTime[i] > times[index503]:
         post_trans.append(binedData[i]) #builds array of post transit normalized flux
     else:
         trans.append(binedData[i])      #builds array of transit normalized flux
 
 avg_pre   = np.mean(pre_trans)
-avg_trans  = np.mean(trans)
+err_pre   = np.std(pre_trans)/np.sqrt(len(pre_trans))
+avg_trans = np.mean(trans)
+err_trans = np.std(trans)/np.sqrt(len(trans))
 avg_post  = np.mean(post_trans)
+err_post  = np.std(post_trans)/np.sqrt(len(post_trans))
 
 avg_non_trans = (avg_pre + avg_post)/2.0
+err_non_trans = np.sqrt(err_pre**2.0 + err_post**2.0)/np.sqrt(2.0)
 
-depth =  avg_non_trans - avg_trans
+depth =  avg_non_trans - avg_trans 
+err_depth = np.sqrt(err_non_trans**2 + err_trans**2)
 depth_prcnt = (depth/avg_non_trans) * 100.
-print "Transit Depth: ", depth
-print "Transit Depth %: ",depth_prcnt
+pt1 = err_depth/avg_non_trans 
+pt2 = (err_non_trans*depth)/avg_non_trans**2.0
+err_prcnt = np.sqrt(pt1**2 + pt2**2)
+print "Transit Depth: ", depth, err_depth
+print "Transit Depth %: ",depth_prcnt, err_prcnt
 # Other potential methods, not sure which is actually the best representation
 
-depth1 = avg_pre - avg_trans
-depth1_prcnt = (depth1/avg_pre) * 100.
-print "Depth Method 2 (depth,%): ", depth1, depth1_prcnt
-depth2 = avg_post - avg_trans
-depth2_prcnt = (depth2/avg_post) * 100
-print "Depth Method 2 (depth,%): ", depth2, depth2_prcnt
+#depth1 = avg_pre - avg_trans
+#depth1_prcnt = (depth1/avg_pre) * 100.
+#print "Depth Method 1 (depth,%): ", depth1, depth1_prcnt
+#depth2 = avg_post - avg_trans
+#depth2_prcnt = (depth2/avg_post) * 100
+#print "Depth Method 2 (depth,%): ", depth2, depth2_prcnt
 
 #Determine error in transit depth
 
@@ -276,18 +311,23 @@ print "Depth Method 2 (depth,%): ", depth2, depth2_prcnt
 # equation for ratio r/R = sqrt( 1 - transit flux / baseline flux)
 
 f2 = avg_trans
+err_f2 = err_trans
 f1 = avg_non_trans
+err_f1 = err_non_trans
+division = f2/f1
+
+print 'division = ', division
+print (1 - np.sqrt(division))
 
 ratio_squared = 1 - (f2/f1)
 ratio = np.sqrt(ratio_squared)
 
-#part_err_ratio_sq = (err_f2/f1)
-#part2_err_ratio_sq= ((f2*err_f1)/(f1**2))
-#err_ratio_squared = np.sqrt( part_err_ratio_sq**2 + part2_err_ratio_sq**2)
+part_err_ratio_sq = (err_f2/f1)
+part2_err_ratio_sq= ((f2*err_f1)/(f1**2))
+err_ratio_squared = np.sqrt( part_err_ratio_sq**2 + part2_err_ratio_sq**2)
+err_ratio = 0.5 * err_ratio_squared * np.sqrt(1/ratio)
 
-#err_ratio = 0.5 * err_ratio_squared * np.sqrt(1/ratio)
-output = r'\frac{r_{p}}{R_{s}}: ' ratio # r'\pm' err_ratio
-print output
+print "Planet Star radius ratio", ratio, err_ratio
 
 
 
@@ -299,11 +339,10 @@ for k in range(len(sciflux)):
 for k in range(len(sciflux)):
     t.append(k)
 
-
 #Plotting Jazz! Doobie do bop, groovie!!
-    
+spacespace = np.linspace(0,max(mus),len(mus))    
 plt.plot(binedTime,binedData,linestyle='none',marker='o',label = 'HD 189733')
-plt.errorbar(binedTime,binedData,yerr=errri,linestyle='none',color='black')
+plt.errorbar(binedTime,binedData,yerr=binedError,linestyle='none',color='black')
 #plt.plot(bins,binedData,linestyle = "none",marker='o')
 #plt.plot(t,ri,linestyle = "none",marker='x')
 #plt.plot(t,mus)
@@ -311,4 +350,5 @@ plt.errorbar(binedTime,binedData,yerr=errri,linestyle='none',color='black')
 plt.xlabel(r'Times Elapsed (s)', fontsize=12)
 plt.ylabel(r'Relative Flux', fontsize=12)
 plt.legend(loc=1)
+plt.savefig('transit-hd189733.pdf',format='pdf')
 plt.show()
