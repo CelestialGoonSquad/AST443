@@ -17,20 +17,33 @@ def flux_calc(flux,error):
     return fscaled,escaled
 
 #create lists to hold variables that we need to print for our science object
-sciflux = []
-scierr = []
-sciname = []
+sciflux = []            #flux on the science object
+scierr = []             #error on the flux of the science object
+sciname = []            #array of science files to be used
 dates =[]
-filenames = []
-ignore = []         #array for lines to be ignored due to deviation
-fluxpretran = []
-errpretran = []
-fluxaftertran = []
-erraftertran = []
-totfluxforbase = []
-errtotfluxforbase = []
-fluxtran = []
-errtran = []
+filenames = []          #array of files to be used
+ignore = []             #array for lines to be ignored due to deviation
+fluxpretran = []        #array of flux values for images before transit
+errpretran = []         #error in the flux values prior to transit
+fluxaftertran = []      #array of flux values for images after transit
+erraftertran = []       #error in the flux values post transit
+totfluxforbase = []     #all flux values not in the transit
+errtotfluxforbase = []  #error in flux values not in transt
+fluxtran = []           #flux values during transity
+errtran = []            #error in flux values during transity
+t_refstar = []          #array of number of reference star files
+times = []              #array of the time of for a observation file
+mus = []                #weighted normalized average for reference stars
+muerrs = []             #weighted error for weighted averages of reference stars
+ri = []                 #normalized and corrected flux for science object
+errris = []             #error for normalized,corrected flux
+binedData = []          #place where data goes after it is bined
+bins = []               #makes bin by bin number
+binedTime = []          #array of time at the center of a bin
+pre_trans = []          #array of normalized flux pre transit
+trans = []              #array of normalized flux during transity
+post_trans = []         #array of normalized flux post tranist
+t = []                  #array of file numbers for plotting
 
 #create lists of lists for variables for the 10 extra objects
 names = [[] for _ in range(10)] #each list has 10 lists in it for each object
@@ -104,7 +117,7 @@ for f in filenames:
         j = j+1
 
     i = i+1
-    t_refstar = []
+#    t_refstar = []
     for w in range(len(name)):
         t_refstar.append(w)
 
@@ -120,7 +133,7 @@ print 'length of t_refstar before = ', len(t_refstar)
 
 
 #Calculate the times, put everything into seconds
-times = []
+#times = []
 first = 0
 for w in names[0]:
     new = w.replace('.cat','.FIT')
@@ -151,10 +164,10 @@ for k in range(0,10):
 
 
 #create list for averaged flux and error over non-sci objects
-mus = []
-muerrs = []
-ri = []
-errris = []
+#mus = []
+#muerrs = []
+#ri = []
+#errris = []
 
 for k in range(len(names[1])):
     if names[1][k] == sciname[k]:
@@ -181,7 +194,7 @@ print 'errris = ', errris
 
 # Binning of the data
 
-binedData = []    #place where data goes after it is bined
+#binedData = []    #place where data goes after it is bined
 userBinSize = 200 #Length of each bin in seconds
 imagesInBin = userBinSize // 20
 if imagesInBin <= 0:
@@ -206,12 +219,12 @@ for i in range(0,numBins):  #calculates the value for each bin according to bin 
         lastavg = sum / last_bin
         binedData.append(lastavg)
         
-bins = [] #makes bin by bin number
+#bins = [] #makes bin by bin number
 for i in range(0,(numBins)):
     bins.append(i)
 
 #do the bining stuff for the times now
-binedTime = []
+#binedTime = []
 for i in range(0,numBins):   #calculates the value for each bin according to bin size
     start = i*imagesInBin     #bin boundaries
     end = ((i+1)*imagesInBin) - 1
@@ -222,9 +235,9 @@ print 'len of binedTime array = ', len(binedTime)
 
 #Determine the transit depth
 
-pre_trans = []
-trans = []
-post_trans = []
+#pre_trans = []
+#trans = []
+#post_trans = []
 
 for i in range (0,numBins):
     if binedTime[i] < times[177]:
@@ -279,7 +292,7 @@ print output
 
 
 # I/O stuffs
-t = []
+#t = []
 for k in range(len(sciflux)):
     #print k,dates[k],sciflux[k],scierr[k],mus[k],muerrs[k],sciflux[k]/mus[k]
     pass
