@@ -31,7 +31,7 @@ totfluxforbase = []     #all flux values not in the transit
 errtotfluxforbase = []  #error in flux values not in transt
 fluxtran = []           #flux values during transity
 errtran = []            #error in flux values during transity
-t_refstar = []          #array of number of reference star files
+#t_refstar = []          #array of number of reference star files
 times = []              #array of the time of for a observation file
 mus = []                #weighted normalized average for reference stars
 muerrs = []             #weighted error for weighted averages of reference stars
@@ -101,13 +101,14 @@ for f in filenames:
 
     print ignore
     i = i+1
-#    t_refstar = []
+    t_refstar = []
     for w in range(len(name)):
         t_refstar.append(w)
 
     t_refstar = np.delete(t_refstar,ignore)
     ref_fscaled = np.delete(ref_fscaled,ignore)
-
+    print type(ref_fscaled)
+    print len(ref_fscaled)
 
 #Calculate the times, put everything into seconds
 #times = []
@@ -281,6 +282,8 @@ f2 = avg_trans
 err_f2 = err_trans
 f1 = avg_non_trans
 err_f1 = err_non_trans
+print "f1 = ", f1, err_f1
+print "f2 = ", f2, err_f2
 division = f2/f1
 
 print 'division = ', division
@@ -306,13 +309,19 @@ for k in range(len(sciflux)):
 for k in range(len(sciflux)):
     t.append(k)
 
+#textfile = open("records.txt","rw")
+#for files in range(0,len(sciflux)):
+#    textfile.write(sciflux[files] + "    " + scierr[files] + "    "  + mus[files] + "    " + ri[files])
+
 #Plotting Jazz! Doobie do bop, groovie!!
 spacespace = np.linspace(0,max(mus),len(mus))    
 plt.plot(binedTime,binedData,linestyle='none',marker='o',label = 'HD 189733')
-plt.errorbar(binedTime,binedData,yerr=binedError,capsize=3,color='black')
+plt.errorbar(binedTime,binedData,yerr=binedError,linestyle='none',capsize=3,color='black')
 #plt.plot(bins,binedData,linestyle = "none",marker='o')
 #plt.plot(t,ri,linestyle = "none",marker='x')
 #plt.plot(t,mus)
+#plt.plot(t_refstar,ref_fscaled,linestyle='none',marker='o')
+#plt.errorbar(t_refstar,ref_fscaled,yerr=ref_escaled,linestyle='none',capsize=3,color='black')
 #plt.ylim(0.8,1.10)
 plt.xlabel(r'Times Elapsed (s)', fontsize=12)
 plt.ylabel(r'Relative Flux', fontsize=12)
