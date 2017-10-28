@@ -99,7 +99,7 @@ for f in filenames:
         fref[i].append(ref_fscaled[j])
         eref[i].append(ref_escaled[j])
 
-    print ignore
+
     i = i+1
     t_refstar = []
     for w in range(len(name)):
@@ -107,8 +107,7 @@ for f in filenames:
 
     t_refstar = np.delete(t_refstar,ignore)
     ref_fscaled = np.delete(ref_fscaled,ignore)
-    print type(ref_fscaled)
-    print len(ref_fscaled)
+
 
 #Calculate the times, put everything into seconds
 #times = []
@@ -130,11 +129,22 @@ for w in names[0]:
         totsec = totsec - firsttime
     times.append(totsec)
 
+for i in range(0,len(sciflux)):
+#    if sciflux[i] > 225500:
+#        if i not in ignore:
+#            ignore.append(i)
+    if sciflux[i] < 192000:
+        if i not in ignore:
+            ignore.append(i)
+    elif i < 480 and i > 455 and sciflux[i] < 202200:
+        if i not in ignore:
+            ignore.append(i)
+    elif i < 428 and sciflux[i] < 206000:
+        if i not in ignore:
+            ignore.append(i)
+
 # removes the problem images... we've already dealt with the children :)
-times = np.delete(times,ignore)
-sciflux = np.delete(sciflux,ignore)
-sciname = np.delete(sciname,ignore)
-scierr = np.delete(scierr,ignore)
+#times = np.delete(times,ignore)
 for k in range(0,10):
     names[k] = np.delete(names[k],ignore)
     fref[k] = np.delete(fref[k],ignore)
@@ -176,6 +186,11 @@ print "baseline and error: ", baseline,errbase
 print "tranline and error: ", tranline,errtranbase
 
 
+sciflux = np.delete(sciflux,ignore)
+sciname = np.delete(sciname,ignore)
+scierr = np.delete(scierr,ignore)
+
+
 #create list for averaged flux and error over non-sci objects
 #mus = []
 #muerrs = []
@@ -193,6 +208,8 @@ for k in range(len(names[1])):
     else:
         pass
 
+#baseline=1.0
+
 for i in range(len(sciflux)):  # calculates normalized ri
     divtemp = sciflux[i]/(mus[i]*baseline)
     ri.append(divtemp)
@@ -202,6 +219,13 @@ for i in range(len(sciflux)):  # calculates normalized ri
     errri = np.sqrt(partialsciflux**2 + partialmu**2 + partialbaseline**2)
     errris.append(errri)
 
+for i in range(0,len(ri)):
+    if ri[i] > 1.01:
+        if i not in ignore:
+            ignore.append(i)
+
+ri = np.delete(ri,ignore)
+times = np.delete(times,ignore)
 # Binning of the data
 
 userBinSize = 300 #Length of each bin in seconds
@@ -212,6 +236,8 @@ actualBinSize = imagesInBin * 20
 numBins = len(ri)//imagesInBin
 last_bin = len(ri) % imagesInBin
 average = []
+
+
 
 for i in range(0,numBins):  #calculates the value for each bin according to bin size
     sum = 0
@@ -244,16 +270,19 @@ for i in range(0,numBins):   #calculates the value for each bin according to bin
 
 #Determine the transit depth
 
-#pre_trans = []
-#trans = []
-#post_trans = []
+pre_trans = []
+trans = []
+post_trans = []
+
+index177=187
+index503=451
 
 for i in range (0,numBins):
     if binedTime[i] < times[index177]:
         pre_trans.append(binedData[i]) #builds array of pre transit normalized flux
     elif binedTime[i] > times[index503]:
         post_trans.append(binedData[i]) #builds array of post transit normalized flux
-    else:
+    elif binedTime[i] < times[360] and binedTime[i] > times[310]:
         trans.append(binedData[i])      #builds array of transit normalized flux
 
 avg_pre   = np.mean(pre_trans)
@@ -286,9 +315,6 @@ print "f1 = ", f1, err_f1
 print "f2 = ", f2, err_f2
 division = f2/f1
 
-print 'division = ', division
-print (1 - np.sqrt(division))
-
 ratio_squared = 1 - (f2/f1)
 ratio = np.sqrt(ratio_squared)
 
@@ -312,6 +338,8 @@ for k in range(len(sciflux)):
 #textfile = open("records.txt","rw")
 #for files in range(0,len(sciflux)):
 #    textfile.write(sciflux[files] + "    " + scierr[files] + "    "  + mus[files] + "    " + ri[files])
+
+t = np.delete(t,ignore)
 
 #Plotting Jazz! Doobie do bop, groovie!!
 spacespace = np.linspace(0,max(mus),len(mus))    
