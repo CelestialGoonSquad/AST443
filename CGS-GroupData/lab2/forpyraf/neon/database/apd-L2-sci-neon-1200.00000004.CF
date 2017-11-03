@@ -1,0 +1,27 @@
+# Tue 09:40:23 31-Oct-2017
+begin	aperture d-L2-sci-neon-1200.00000004.CF 1 344. 22.01217
+	image	d-L2-sci-neon-1200.00000004.CF
+	aperture	1
+	beam	1
+	center	344. 22.01217
+	low	-343. -15.93627
+	high	421. 21.9579
+	background
+		xmin -15.93627
+		xmax 39.66214
+		function chebyshev
+		order 1
+		sample  22.1756:39.66214
+		naverage -3
+		niterate 0
+		low_reject 3.
+		high_reject 3.
+		grow 0.
+	axis	2
+	curve	5
+		2.
+		1.
+		1.
+		765.
+		0.
+

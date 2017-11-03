@@ -1,0 +1,27 @@
+# Mon 17:51:02 30-Oct-2017
+begin	aperture L2-arc-hg-10.00000000.CF 1 23. 55.37077
+	image	L2-arc-hg-10.00000000.CF
+	aperture	1
+	beam	1
+	center	23. 55.37077
+	low	-22. -54.99469
+	high	742. 3.745518
+	background
+		xmin -63.
+		xmax 63.
+		function chebyshev
+		order 1
+		sample *
+		naverage -3
+		niterate 0
+		low_reject 3.
+		high_reject 3.
+		grow 0.
+	axis	2
+	curve	5
+		2.
+		1.
+		1.
+		765.
+		0.
+

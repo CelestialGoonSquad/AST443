@@ -1,0 +1,27 @@
+# Mon 13:45:14 30-Oct-2017
+begin	aperture L2-arc-neon.00000000.CF 1 182. 28.54956
+	image	L2-arc-neon.00000000.CF
+	aperture	1
+	beam	1
+	center	182. 28.54956
+	low	-181. -1.440485
+	high	583. 1.291006
+	background
+		xmin -1.440485
+		xmax 9.450441
+		function chebyshev
+		order 1
+		sample  6.450441:9.450441
+		naverage -3
+		niterate 0
+		low_reject 3.
+		high_reject 3.
+		grow 0.
+	axis	2
+	curve	5
+		2.
+		1.
+		1.
+		765.
+		0.
+

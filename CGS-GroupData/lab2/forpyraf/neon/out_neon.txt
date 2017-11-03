@@ -1,0 +1,7 @@
+d-L2-sci-neon-1200.00000000.CF.fits
+d-L2-sci-neon-1200.00000001.CF.fits
+d-L2-sci-neon-1200.00000002.CF.fits
+d-L2-sci-neon-1200.00000003.CF.fits
+d-L2-sci-neon-1200.00000004.CF.fits
+d-L2-star-neon-40.00000000.CF.fits
+d-L2-arc-neon.00000000.CF.fits

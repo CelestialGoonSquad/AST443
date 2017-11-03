@@ -1,0 +1,27 @@
+# Tue 09:25:15 31-Oct-2017
+begin	aperture d-L2-sci-hg-240.00000002.CF 1 726. 27.55388
+	image	d-L2-sci-hg-240.00000002.CF
+	aperture	1
+	beam	1
+	center	726. 27.55388
+	low	-725. -7.352291
+	high	39. 7.967733
+	background
+		xmin -26.64835
+		xmax 7.967733
+		function chebyshev
+		order 1
+		sample  -26.64835:-9.783553
+		naverage -3
+		niterate 0
+		low_reject 3.
+		high_reject 3.
+		grow 0.
+	axis	2
+	curve	5
+		2.
+		1.
+		1.
+		765.
+		0.
+

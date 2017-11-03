@@ -1,0 +1,7 @@
+d-L2-sci-neon-1200.00000000.fits[*,32:92]
+d-L2-sci-neon-1200.00000001.fits[*,32:92]
+d-L2-sci-neon-1200.00000002.fits[*,32:92]
+d-L2-sci-neon-1200.00000003.fits[*,32:92]
+d-L2-sci-neon-1200.00000004.fits[*,32:92]
+d-L2-star-neon-40.00000000.fits[*,32:92]
+d-L2-arc-neon.00000000.fits[*,32:92]
