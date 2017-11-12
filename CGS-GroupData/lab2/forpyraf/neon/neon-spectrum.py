@@ -9,7 +9,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 with open("all-images.cal.txt") as f:
+=======
+with open("/Users/ilovealltigers/SBU_F17/AST_443/LAB1/CGS-GroupData/lab2/forpyraf/neon/all-images.cal.txt") as f:
+>>>>>>> cf485ca19bac66e43c5ca9bdfe893c026421eac0
 =======
 with open("/Users/ilovealltigers/SBU_F17/AST_443/LAB1/CGS-GroupData/lab2/forpyraf/neon/all-images.cal.txt") as f:
 >>>>>>> cf485ca19bac66e43c5ca9bdfe893c026421eac0
@@ -29,7 +33,10 @@ plt.figure(1)
 ax1 = plt.subplot(211)
 plt.plot(x,y)
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> cf485ca19bac66e43c5ca9bdfe893c026421eac0
 
 plt.xlim([6200.0, 7000.0])
 plt.tick_params(axis='x', labelsize=0)
@@ -116,5 +123,8 @@ plt.subplots_adjust(hspace=0)
 
 plt.savefig('neon-plt.png', format='png',dpi=150)
 
+<<<<<<< HEAD
+>>>>>>> cf485ca19bac66e43c5ca9bdfe893c026421eac0
+=======
 >>>>>>> cf485ca19bac66e43c5ca9bdfe893c026421eac0
 plt.show()
