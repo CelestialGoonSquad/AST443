@@ -1,0 +1,4 @@
+range use: [35:97]
+order for normalized flat: 22
+order for apall on star: 15
+order for sensfunc: 6
