@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-f_time = np.genfromtxt("Base-Inter-55-05.txt",skip_header=7,usecols = 0)
-f_pot = np.genfromtxt("Base-Inter-55-05.txt",skip_header=7,usecols = 1)
+f_time = np.genfromtxt("/Users/ilovealltigers/SBU_F17/AST_443/LAB1/CGS-GroupData/lab3/Base-Inter-30-12.txt",skip_header=7,usecols = 0)
+f_pot = np.genfromtxt("/Users/ilovealltigers/SBU_F17/AST_443/LAB1/CGS-GroupData/lab3/Base-Inter-30-12.txt",skip_header=7,usecols = 1)
 
 def gaussian(t,sigma):
     """ a gaussian kernel """
@@ -29,6 +29,7 @@ for s in range(len(sigmas)):
     plt.plot(f_time,smooth_pot,label = str(sigmas[s]))
 
 plt.plot(f_time,f_pot,label = "true")
+plt.title("50-07")
 plt.legend()
-plt.savefig("guassian_smoothed_inter_obsv.png")
+plt.savefig("/Users/ilovealltigers/SBU_F17/AST_443/LAB1/CGS-GroupData/lab3/gaussian_smoothed_inter_obsv_30_12.png")
 plt.show()
