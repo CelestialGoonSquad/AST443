@@ -2,7 +2,7 @@ import numpy as np
 from scipy.signal import argrelextrema
 import matplotlib.pyplot as plt
 
-name = "Base-Inter-55-05.txt"
+name = "/Users/ilovealltigers/SBU_F17/AST_443/LAB1/CGS-GroupData/lab3/data/Base-Inter-55-05.txt"
 f_time = np.genfromtxt(name,skip_header=7,usecols = 0)
 f_pot = np.genfromtxt(name,skip_header=7,usecols = 1)
 
@@ -68,8 +68,10 @@ for j in range(len(r)):
 for j in range(len(m)):
     print "time,min vals = ",tm[j],m[j]
 
+plt.xlim(04,16)
+#plt.ylim(3,5)
 plt.plot(f_time,f_pot,label = "true")
-plt.title("35-11")
-plt.legend()
+plt.title("55-05")
+#plt.legend()
 #plt.savefig("gaussian_smoothed_inter_obsv_30-12.png")
 plt.show()
