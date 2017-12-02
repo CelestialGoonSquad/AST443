@@ -1,12 +1,17 @@
 import numpy as np
 from scipy.signal import argrelextrema
 import matplotlib.pyplot as plt
+import csv
 
-name = "/Users/ilovealltigers/SBU_F17/AST_443/LAB1/CGS-GroupData/lab3/data/Base-Inter-55-05.txt"
-f_time = np.genfromtxt(name,skip_header=7,usecols = 0)
-f_pot = np.genfromtxt(name,skip_header=7,usecols = 1)
+name = "inter145-175-b70.txt"
 
 
+if 'Base' in name:
+    f_time = np.genfromtxt(name,skip_header=7,usecols = 0)
+    f_pot = np.genfromtxt(name,skip_header=7,usecols = 1)
+if 'inter' in name:
+    f_time = np.genfromtxt(name,skip_header=2,usecols=0)
+    f_pot = np.genfromtxt(name,skip_header=2,usecols=1)
 def gaussian(t,sigma):
     """ a gaussian kernel """
 
@@ -27,7 +32,7 @@ def do_convolve(t,sig,kernal):
 sigmas = [0.01,0.03,0.05,0.075,0.10]
 i = [0.2,0.4,0.6,0.8,1.0]
 for s in range(len(sigmas)):
-    if "50-07" in name:
+    if "50-07" in name or "145-175" in name or "180-150" in name:
         smooth_pot = do_convolve(f_time[:-1],f_pot[:-1],gaussian(f_time[:-1],sigmas[s]))
         smooth_pot = smooth_pot + i[s]
         plt.plot(f_time[:-1],smooth_pot,label = str(sigmas[s]))
@@ -71,7 +76,9 @@ for j in range(len(m)):
 plt.xlim(04,16)
 #plt.ylim(3,5)
 plt.plot(f_time,f_pot,label = "true")
-plt.title("55-05")
-#plt.legend()
-#plt.savefig("gaussian_smoothed_inter_obsv_30-12.png")
+plt.title("70")
+plt.xlim([17.0,32.0])
+plt.ylim([2.5,4])
+plt.legend()
+#plt.savefig("gaussian_smoothed_inter_obsv_65.png")
 plt.show()
