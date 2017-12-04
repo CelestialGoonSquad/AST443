@@ -5,6 +5,7 @@ import csv
 
 name = "Base-Inter-30-12.txt"
 
+
 if 'Base' in name:
     f_time = np.genfromtxt(name,skip_header=7,usecols = 0)
     f_pot = np.genfromtxt(name,skip_header=7,usecols = 1)
@@ -84,6 +85,8 @@ for j in range(len(r)):
 for j in range(len(m)):
     print "time,min vals = ",tm[j],m[j]
 
+plt.xlim(04,16)
+#plt.ylim(3,5)
 plt.plot(f_time,f_pot,label = "true")
 plt.title("65")
 plt.xlim([4.0,12.0])
