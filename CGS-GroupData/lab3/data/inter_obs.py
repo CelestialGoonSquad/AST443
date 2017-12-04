@@ -3,7 +3,7 @@ from scipy.signal import argrelextrema
 import matplotlib.pyplot as plt
 import csv
 
-name = "inter145-175-b70.txt"
+name = "Base-Inter-30-12.txt"
 
 if 'Base' in name:
     f_time = np.genfromtxt(name,skip_header=7,usecols = 0)
@@ -11,6 +11,18 @@ if 'Base' in name:
 if 'inter' in name:
     f_time = np.genfromtxt(name,skip_header=2,usecols=0)
     f_pot = np.genfromtxt(name,skip_header=2,usecols=1)
+
+background = np.where(f_time <= 2)
+background = background[0]
+backgrounda = []
+for index in background:
+    backgrounda.append(f_pot[index])
+mean = np.mean(backgrounda)
+std = np.std(backgrounda)
+print mean, std
+
+f_pot = f_pot - mean
+
 def gaussian(t,sigma):
     """ a gaussian kernel """
 
@@ -73,9 +85,9 @@ for j in range(len(m)):
     print "time,min vals = ",tm[j],m[j]
 
 plt.plot(f_time,f_pot,label = "true")
-plt.title("70")
-plt.xlim([17.0,32.0])
-plt.ylim([2.5,4])
+plt.title("65")
+plt.xlim([4.0,12.0])
+plt.ylim([-0.75,0])
 plt.legend()
 #plt.savefig("gaussian_smoothed_inter_obsv_65.png")
 plt.show()
