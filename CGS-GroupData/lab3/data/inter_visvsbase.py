@@ -29,8 +29,10 @@ def sinc_func(x,a):
 
 
 popt, pcov = curve_fit(sinc_func,baseline,vis,0.0093073)
+perr = np.sqrt(pcov)
 print popt
 print pcov
+print perr
 
 plt.plot(baseline, sinc_func(baseline,*popt), linestyle = '--',label='Fitted Sinc Function')
 plt.legend(loc=1)
