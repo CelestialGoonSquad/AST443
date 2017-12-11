@@ -88,7 +88,7 @@ for j in range(len(r)):
 for j in range(len(m)):
     print "time,min vals = ",tm[j],m[j]
 
-plt.xlim(0.25,.3)
+#plt.xlim(0.25,.35)
 #plt.ylim(3,5)
 plt.plot(f_time,f_pot,label = "true")
 plt.title("75")
