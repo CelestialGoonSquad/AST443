@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
-name = 'bsnvs.txt'
+name = 'bsnvs_new.txt'
 baseline = np.genfromtxt(name,skip_header=1,usecols = 0)
 vis = np.genfromtxt(name,skip_header=1,usecols = 1)
 error = np.genfromtxt(name,skip_header=1,usecols=2)
@@ -36,5 +36,5 @@ print perr
 
 plt.plot(baseline, sinc_func(baseline,*popt), linestyle = '--',label='Fitted Sinc Function')
 plt.legend(loc=1)
-#plt.savefig('sinc-fit.pdf',format='pdf')
+plt.savefig('sinc-fit.pdf',format='pdf')
 plt.show() 
