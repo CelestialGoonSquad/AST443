@@ -4,21 +4,29 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
+from matplotlib import rc
+rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
+## for Palatino and other serif fonts use:
+#rc('font',**{'family':'serif','serif':['Palatino']})
+rc('text', usetex=True)
 
 name = 'bsnvs_new.txt'
 baseline = np.genfromtxt(name,skip_header=1,usecols = 0)
-vis = np.genfromtxt(name,skip_header=1,usecols = 1)
-error = np.genfromtxt(name,skip_header=1,usecols=2)
+baseerr = np.genfromtxt(name,skip_header=1,usecols = 1)
+vis = np.genfromtxt(name,skip_header=1,usecols = 2)
+error = np.genfromtxt(name,skip_header=1,usecols = 3)
 
 plt.plot(baseline,vis, linestyle='none',marker='o')
-plt.errorbar(baseline,vis,yerr=error,linestyle='')
-plt.xlabel(r'Baseline (cm)')
-plt.ylabel(r'Visibility')
+plt.errorbar(baseline,vis,xerr=baseerr,yerr=error,linestyle='')
+plt.xlabel(r'$B_{\lambda}$',fontsize=16)
+plt.ylabel(r'Visibility',fontsize=16)
 
 
-z=np.linspace(0,190,100)
+z=np.linspace(0,200,100)
+w=abs(np.sin(np.pi*z*0.0082874)/(np.pi*z*0.0082874))
 y=abs(np.sin(np.pi*z*0.0093073)/(np.pi*z*0.0093073))
-plt.plot(z,y,linestyle="-",label='Predicted Sinc Function')
+plt.plot(z,w,linestyle="--", label='Fitted Sinc Function')
+plt.plot(z,y,linestyle="-",label='Expected Sinc Function')
 
 #plt.show()
 #sinc = sin(piBalpha)/piB)
@@ -34,7 +42,7 @@ print popt
 print pcov
 print perr
 
-plt.plot(baseline, sinc_func(baseline,*popt), linestyle = '--',label='Fitted Sinc Function')
+#plt.plot(baseline, abs(sinc_func(baseline,*popt)), linestyle = '--',label='Fitted Sinc Function')
 plt.legend(loc=1)
 plt.savefig('sinc-fit.pdf',format='pdf')
 plt.show() 
